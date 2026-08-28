@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Title -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="14dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_plus"
+                app:tint="#DC2626"
+                android:contentDescription="বাকি"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/tvAddDueDialogTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="নতুন বাকি হিসাব যোগ"
+                android:textColor="#0F172A"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Customer Name Field -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilDlgDueCustomerName"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:hint="গ্রাহকের নাম লিখুন *"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#DC2626"
+            app:startIconDrawable="@drawable/ic_user"
+            app:startIconTint="#64748B">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/actvDlgDueCustomerName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:completionThreshold="1"
+                android:inputType="textPersonName"
+                android:textColor="#0F172A"
+                android:textSize="14sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Phone Field -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilDlgDuePhone"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:hint="মোবাইল নম্বর (ঐচ্ছিক)"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#DC2626"
+            app:startIconDrawable="@drawable/ic_phone_call"
+            app:startIconTint="#64748B">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDlgDuePhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:textColor="#0F172A"
+                android:textSize="14sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Amount Field -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilDlgDueAmount"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:hint="বাকির টাকার পরিমাণ *"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#DC2626"
+            app:prefixText="৳ "
+            app:prefixTextColor="#DC2626"
+            app:prefixTextAppearance="@style/TextAppearance.Material3.TitleMedium">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDlgDueAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textColor="#991B1B"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Product / Item Details with Store Product Autocomplete -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilDlgDueDetails"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:hint="মালের বিবরণ বা পণ্যের নাম (যেমন: চিনি, তেল)"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#DC2626">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/actvDlgDueDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:completionThreshold="1"
+                android:inputType="text"
+                android:textColor="#0F172A"
+                android:textSize="13.5sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Due Date Field -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilDlgDueDate"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:hint="পরিশোধের সম্ভাব্য তারিখ (ঐচ্ছিক)"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="#DC2626"
+            app:startIconDrawable="@drawable/ic_baki_aging"
+            app:startIconTint="#64748B">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDlgDueDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="false"
+                android:textColor="#0F172A"
+                android:textSize="13.5sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Save Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDlgSaveDue"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="বাকি সংরক্ষণ করুন"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:backgroundTint="#DC2626"
+            app:cornerRadius="14dp" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,1438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Mini-App Brand Header -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardBackgroundColor="#0F172A"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="14dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_nav_baki"
+                        app:tint="#38BDF8"
+                        android:contentDescription="Baki" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="ডিজিটাল বাকি খাতা"
+                        android:textColor="#FFFFFF"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/shape_capsule_white"
+                        android:backgroundTint="#1E293B"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="2dp"
+                        android:text="MINI-APP"
+                        android:textColor="#38BDF8"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="গ্রাহক খতিয়ান, বকেয়া আদায় ও তাগাদা সহকারী"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBakiHeaderPdf"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:padding="0dp"
+                    app:backgroundTint="#1E293B"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_download"
+                    app:iconTint="#38BDF8"
+                    app:iconSize="18dp"
+                    android:contentDescription="পিডিএফ রিপোর্ট"
+                    android:layout_marginEnd="6dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBakiHeaderAddQuick"
+                    style="@style/Widget.Material3.Button.IconButton.Filled"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:padding="0dp"
+                    app:backgroundTint="#EF4444"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_plus"
+                    app:iconTint="#FFFFFF"
+                    app:iconSize="18dp"
+                    android:contentDescription="বাকি যোগ" />
+            </LinearLayout>
+        </RelativeLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Sub-Navigation Bar (Horizontal Pill Tabs) -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiSubTabDashboard"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginEnd="6dp"
+                android:text="ড্যাশবোর্ড"
+                android:textSize="11.5sp"
+                android:textStyle="bold"
+                app:cornerRadius="19dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiSubTabCustomers"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginEnd="6dp"
+                android:text="কাস্টমার তালিকা"
+                android:textSize="11.5sp"
+                app:cornerRadius="19dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiSubTabTransactions"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginEnd="6dp"
+                android:text="সব লেনদেন"
+                android:textSize="11.5sp"
+                app:cornerRadius="19dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiSubTabReports"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginEnd="6dp"
+                android:text="রিপোর্ট ও এজিং"
+                android:textSize="11.5sp"
+                app:cornerRadius="19dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiSubTabReminders"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:text="তাগাদা কেন্দ্র"
+                android:textSize="11.5sp"
+                app:cornerRadius="19dp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- ============================================== -->
+    <!-- SUB-VIEW 1: BAKI DASHBOARD                     -->
+    <!-- ============================================== -->
+    <LinearLayout
+        android:id="@+id/layoutBakiSubDashboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <!-- Hero Balance Summary Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="1dp"
+            app:strokeColor="#FEE2E2"
+            app:strokeWidth="1.5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Top Row: Title and Overdue Alert -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="মোট বকেয়া পাওনা"
+                            android:textColor="#DC2626"
+                            android:textSize="12.5sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvBakiHeroTotalDue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="৳ ০"
+                            android:textColor="#991B1B"
+                            android:textSize="28sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutHeroOverdueBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/shape_capsule_white"
+                        android:backgroundTint="#FEF2F2"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="5dp">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/shape_circle"
+                            android:backgroundTint="#EF4444"
+                            android:layout_marginEnd="6dp" />
+
+                        <TextView
+                            android:id="@+id/tvBakiHeroOverdueCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="মেয়াদোত্তীর্ণ: ০"
+                            android:textColor="#DC2626"
+                            android:textSize="11.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="12dp"
+                    android:background="#F1F5F9" />
+
+                <!-- Bottom Stats Row: Customer Count | Total Collected | Action -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="মোট খরিদ্দার"
+                            android:textColor="#64748B"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/tvBakiHeroCustomerCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:text="০ জন"
+                            android:textColor="#0F172A"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="24dp"
+                        android:background="#E2E8F0"
+                        android:layout_marginHorizontal="8dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="মোট আদায়"
+                            android:textColor="#64748B"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/tvBakiHeroTotalCollected"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:text="৳ ০"
+                            android:textColor="#059669"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="24dp"
+                        android:background="#E2E8F0"
+                        android:layout_marginHorizontal="8dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="বকেয়া বাকিদার"
+                            android:textColor="#64748B"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/tvBakiHeroActiveDueCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:text="০ জন"
+                            android:textColor="#DC2626"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Feature Icon Grid (App-style Launcher Grid - 8 Features) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="বাকি খাতা টুলস ও ফিচার"
+            android:textColor="#334155"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="4"
+            android:rowCount="2"
+            android:alignmentMode="alignMargins"
+            android:columnOrderPreserved="false"
+            android:useDefaultMargins="true"
+            android:layout_marginBottom="12dp">
+
+            <!-- 1. Customers -->
+            <LinearLayout
+                android:id="@+id/gridBakiCustomers"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/shape_capsule_white"
+                android:backgroundTint="#FFFFFF"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_baki_customers"
+                    app:tint="#2563EB"
+                    android:contentDescription="কাস্টমার" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="কাস্টমার"
+                    android:textColor="#0F172A"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 2. Add Baki Due -->
+            <LinearLayout
+                android:id="@+id/gridBakiAddDue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/shape_capsule_white"
+                android:backgroundTint="#FFFFFF"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_plus"
+                    app:tint="#DC2626"
+                    android:contentDescription="বাকি যোগ" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="বাকি যোগ"
+                    android:textColor="#0F172A"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 3. Receive Payment (Joma) -->
+            <LinearLayout
+                android:id="@+id/gridBakiReceivePayment"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/shape_capsule_white"
+                android:backgroundTint="#FFFFFF"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_baki_money_receive"
+                    app:tint="#059669"
+                    android:contentDescription="টাকা নিন" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="টাকা নিন"
+                    android:textColor="#0F172A"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 4. Transactions -->
+            <LinearLayout
+                android:id="@+id/gridBakiTransactions"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/shape_capsule_white"
+                android:backgroundTint="#FFFFFF"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_notebook"
+                    app:tint="#7C3AED"
+                    android:contentDescription="লেনদেন" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="লেনদেন"
+                    android:textColor="#0F172A"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 5. Statement -->
+            <LinearLayout
+                android:id="@+id/gridBakiStatement"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/shape_capsule_white"
+                android:backgroundTint="#FFFFFF"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_baki_statement"
+                    app:tint="#0284C7"
+                    android:contentDescription="স্টেটমেন্ট" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="স্টেটমেন্ট"
+                    android:textColor="#0F172A"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 6. Reminder Center -->
+            <LinearLayout
+                android:id="@+id/gridBakiReminder"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/shape_capsule_white"
+                android:backgroundTint="#FFFFFF"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_baki_reminder"
+                    app:tint="#D97706"
+                    android:contentDescription="তাগাদা" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="তাগাদা"
+                    android:textColor="#0F172A"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 7. Aging -->
+            <LinearLayout
+                android:id="@+id/gridBakiAging"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/shape_capsule_white"
+                android:backgroundTint="#FFFFFF"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_baki_aging"
+                    app:tint="#EA580C"
+                    android:contentDescription="এজিং" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="বকেয়া এজিং"
+                    android:textColor="#0F172A"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 8. PDF Report -->
+            <LinearLayout
+                android:id="@+id/gridBakiPdf"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/shape_capsule_white"
+                android:backgroundTint="#FFFFFF"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/ic_download"
+                    app:tint="#0D9488"
+                    android:contentDescription="পিডিএফ" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="পিডিএফ খাতা"
+                    android:textColor="#0F172A"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </GridLayout>
+
+        <!-- Quick Action Buttons Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiQuickAddDue"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="+ বাকি দিন"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="#DC2626"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_plus"
+                app:iconSize="14dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiQuickReceivePay"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="টাকা নিন"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="#059669"
+                app:cornerRadius="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiQuickAddCustomer"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:text="+ কাস্টমার"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+        <!-- Smart Real-Time Insight Banner -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardBakiSmartInsight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            app:cardBackgroundColor="#EFF6FF"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#BFDBFE"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="10dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_info"
+                    app:tint="#2563EB"
+                    android:contentDescription="তথ্য"
+                    android:layout_marginEnd="10dp" />
+
+                <TextView
+                    android:id="@+id/tvBakiSmartInsightText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="বাকি হিসাব তথ্য লোড হচ্ছে..."
+                    android:textColor="#1E40AF"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Top Outstanding Customers Section Header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="শীর্ষ বকেয়া গ্রাহক"
+                android:textColor="#0F172A"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnBakiSeeAllCustomers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="সব গ্রাহক দেখুন →"
+                android:textColor="#2563EB"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:padding="4dp" />
+        </RelativeLayout>
+
+        <!-- Container for Top Customers List -->
+        <LinearLayout
+            android:id="@+id/layoutBakiTopCustomersList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Recent Ledger Activity Header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="সাম্প্রতিক বাকি ও জমা লেনদেন"
+                android:textColor="#0F172A"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnBakiSeeAllTransactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="সব লেনদেন →"
+                android:textColor="#2563EB"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:padding="4dp" />
+        </RelativeLayout>
+
+        <!-- Container for Recent Transactions List -->
+        <LinearLayout
+            android:id="@+id/layoutBakiRecentTransactionsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp" />
+    </LinearLayout>
+
+    <!-- ============================================== -->
+    <!-- SUB-VIEW 2: CUSTOMERS DIRECTORY                -->
+    <!-- ============================================== -->
+    <LinearLayout
+        android:id="@+id/layoutBakiSubCustomers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- Search and Add Customer Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:boxCornerRadiusBottomEnd="14dp"
+                app:boxCornerRadiusBottomStart="14dp"
+                app:boxCornerRadiusTopEnd="14dp"
+                app:boxCornerRadiusTopStart="14dp"
+                app:boxStrokeColor="#2563EB"
+                app:startIconDrawable="@drawable/ic_search"
+                app:startIconTint="#64748B">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etBakiCustomerSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="নাম বা ফোন নম্বর খুঁজুন..."
+                    android:inputType="text"
+                    android:textColor="#0F172A"
+                    android:textSize="13sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiAddNewCustomerFromList"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="+ নতুন"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="#2563EB"
+                app:cornerRadius="14dp" />
+        </LinearLayout>
+
+        <!-- Customer Filter Chips -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBakiCustFilterAll"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="সব গ্রাহক"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="17dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBakiCustFilterDue"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="পাওনা বাকি"
+                    android:textSize="11sp"
+                    app:cornerRadius="17dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBakiCustFilterHighest"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="সর্বোচ্চ বকেয়া"
+                    android:textSize="11sp"
+                    app:cornerRadius="17dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBakiCustFilterOverdue"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="মেয়াদোত্তীর্ণ"
+                    android:textSize="11sp"
+                    app:cornerRadius="17dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBakiCustFilterPaid"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:text="পরিশোধিত (০ বাকি)"
+                    android:textSize="11sp"
+                    app:cornerRadius="17dp" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- Customer Cards Container -->
+        <LinearLayout
+            android:id="@+id/layoutBakiCustomerCardsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <!-- Customer Empty State -->
+        <LinearLayout
+            android:id="@+id/layoutBakiCustomerEmptyState"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:src="@drawable/ic_empty_state"
+                android:contentDescription="খালি"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="কোনো গ্রাহকের হিসাব পাওয়া যায়নি"
+                android:textColor="#64748B"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ============================================== -->
+    <!-- SUB-VIEW 3: ALL TRANSACTIONS                   -->
+    <!-- ============================================== -->
+    <LinearLayout
+        android:id="@+id/layoutBakiSubTransactions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- Search & Filter -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:boxCornerRadiusBottomEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxStrokeColor="#2563EB"
+            app:startIconDrawable="@drawable/ic_search"
+            app:startIconTint="#64748B">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etBakiTxSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="গ্রাহক, বিবরণ বা তারিখ খুঁজুন..."
+                android:inputType="text"
+                android:textColor="#0F172A"
+                android:textSize="13sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Tx Type Filter -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiTxFilterAll"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="সব লেনদেন"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                app:cornerRadius="17dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiTxFilterDue"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="বাকি (+)"
+                android:textSize="11sp"
+                app:cornerRadius="17dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBakiTxFilterJoma"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:text="জমা (-)"
+                android:textSize="11sp"
+                app:cornerRadius="17dp" />
+        </LinearLayout>
+
+        <!-- All Transactions List Container -->
+        <LinearLayout
+            android:id="@+id/layoutBakiAllTransactionsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <!-- Tx Empty State -->
+        <LinearLayout
+            android:id="@+id/layoutBakiTxEmptyState"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:src="@drawable/ic_notebook"
+                app:tint="#94A3B8"
+                android:contentDescription="খালি"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="কোনো লেনদেন রেকর্ড পাওয়া যায়নি"
+                android:textColor="#64748B"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ============================================== -->
+    <!-- SUB-VIEW 4: REPORTS & DUE AGING                -->
+    <!-- ============================================== -->
+    <LinearLayout
+        android:id="@+id/layoutBakiSubReports"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- Summary Metric Cards -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                app:cardBackgroundColor="#FEF2F2"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#FECACA"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="মোট বকেয়া"
+                        android:textColor="#DC2626"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvReportTotalDue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="৳ ০"
+                        android:textColor="#991B1B"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                app:cardBackgroundColor="#F0FDF4"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#BBF7D0"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="মোট আদায়"
+                        android:textColor="#16A34A"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvReportTotalCollected"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="৳ ০"
+                        android:textColor="#166534"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <!-- Due Aging Analysis Section -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#E2E8F0"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_baki_aging"
+                        app:tint="#EA580C"
+                        android:contentDescription="Aging"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="বকেয়া সময়কাল বিশ্লেষণ (Due Aging)"
+                        android:textColor="#0F172A"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 1. 1-7 Days (Fresh) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="6dp">
+
+                    <View
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:background="@drawable/shape_circle"
+                        android:backgroundTint="#10B981"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="১ - ৭ দিন (সাম্প্রতিক বাকি)"
+                        android:textColor="#334155"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvAging1to7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="৳ ০ (০ জন)"
+                        android:textColor="#0F172A"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F1F5F9" />
+
+                <!-- 2. 8-30 Days (Pending) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="6dp">
+
+                    <View
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:background="@drawable/shape_circle"
+                        android:backgroundTint="#F59E0B"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="৮ - ৩০ দিন (বকেয়া বাকি)"
+                        android:textColor="#334155"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvAging8to30"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="৳ ০ (০ জন)"
+                        android:textColor="#D97706"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#F1F5F9" />
+
+                <!-- 3. 30+ Days (Overdue / High Risk) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="6dp">
+
+                    <View
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:background="@drawable/shape_circle"
+                        android:backgroundTint="#EF4444"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="৩০+ দিন (উচ্চ ঝুঁকি / অতিবকেয়া)"
+                        android:textColor="#DC2626"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvAging30plus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="৳ ০ (০ জন)"
+                        android:textColor="#DC2626"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Top Debtors Ranking Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#E2E8F0"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="সর্বোচ্চ বাকিদার তালিকা (র‍্যাঙ্কিং)"
+                    android:textColor="#0F172A"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:id="@+id/layoutBakiDebtorsRanking"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- PDF Export Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBakiDownloadReportPdf"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="সম্পূর্ণ বাকি খাতার পিডিএফ রিপোর্ট"
+            android:textColor="#2563EB"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:backgroundTint="#EFF6FF"
+            app:cornerRadius="14dp"
+            app:icon="@drawable/ic_download"
+            app:iconTint="#2563EB"
+            app:iconSize="18dp" />
+    </LinearLayout>
+
+    <!-- ============================================== -->
+    <!-- SUB-VIEW 5: DUE REMINDER CENTER                -->
+    <!-- ============================================== -->
+    <LinearLayout
+        android:id="@+id/layoutBakiSubReminders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="#FFFBEB"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#FDE68A"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_baki_reminder"
+                    app:tint="#D97706"
+                    android:contentDescription="তাগাদা"
+                    android:layout_marginEnd="10dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="গ্রাহকদের সরাসরি হোয়াটসঅ্যাপ ও মেসেজে বিনীত বাকি তাগাদা পাঠান।"
+                    android:textColor="#92400E"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Container for Reminders List -->
+        <LinearLayout
+            android:id="@+id/layoutBakiRemindersList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <!-- Reminders Empty State -->
+        <LinearLayout
+            android:id="@+id/layoutBakiRemindersEmptyState"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:src="@drawable/ic_check_circle"
+                app:tint="#10B981"
+                android:contentDescription="সব পরিশোধিত"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="কোনো গ্রাহকের বকেয়া বাকি নেই! সবাই পরিশোধ করেছেন।"
+                android:textColor="#059669"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

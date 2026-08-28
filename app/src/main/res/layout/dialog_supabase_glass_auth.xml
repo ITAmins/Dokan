@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_glass_card_dark"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Header: Logo, Title, Close Button -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="#2638BDF8">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_cloud"
+                    app:tint="#38BDF8"
+                    android:contentDescription="Cloud Logo" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvAuthModalTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="মাওয়া ক্লাউড ব্যাকআপ"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvAuthModalSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="নিরাপদ সিঙ্ক ও ডেটা সংরক্ষণ"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnAuthClose"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="বন্ধ করুন"
+            android:padding="6dp"
+            android:src="@drawable/ic_close"
+            app:tint="#94A3B8" />
+    </RelativeLayout>
+
+    <!-- Tab Selector: লগইন | নতুন একাউন্ট -->
+    <LinearLayout
+        android:id="@+id/layoutAuthModeTabs"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_glass_input"
+        android:orientation="horizontal"
+        android:padding="3dp">
+
+        <TextView
+            android:id="@+id/btnTabLogin"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_dark_chip_selected_purple"
+            android:gravity="center"
+            android:text="লগইন"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnTabRegister"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:text="নতুন একাউন্ট"
+            android:textColor="#94A3B8"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Form Container (Login & Register Mode) -->
+    <LinearLayout
+        android:id="@+id/layoutAuthForm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Display Name (Visible only on Register) -->
+        <LinearLayout
+            android:id="@+id/layoutAuthNameField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="আপনার নাম বা দোকানের নাম"
+                android:textColor="#E2E8F0"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etAuthDisplayName"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_glass_input"
+                android:hint="যেমন: মাওয়া স্টোর"
+                android:inputType="textCapWords"
+                android:paddingHorizontal="14dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#64748B"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Email Field -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="ইমেইল অ্যাড্রেস"
+            android:textColor="#E2E8F0"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etAuthEmail"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_glass_input"
+            android:hint="yourname@gmail.com"
+            android:inputType="textEmailAddress"
+            android:paddingHorizontal="14dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#64748B"
+            android:textSize="14sp" />
+
+        <!-- Password Field -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)"
+            android:textColor="#E2E8F0"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_glass_input">
+
+            <EditText
+                android:id="@+id/etAuthPassword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toStartOf="@+id/btnTogglePassVisibility"
+                android:background="@android:color/transparent"
+                android:hint="••••••••"
+                android:inputType="textPassword"
+                android:paddingHorizontal="14dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#64748B"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/btnTogglePassVisibility"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="পাসওয়ার্ড দেখুন"
+                android:padding="10dp"
+                android:src="@drawable/ic_search"
+                app:tint="#94A3B8" />
+        </RelativeLayout>
+
+        <!-- Forgot Password Link ("পাসওয়ার্ড ভুলে গেছি?") -->
+        <TextView
+            android:id="@+id/btnForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"
+            android:text="পাসওয়ার্ড ভুলে গেছেন? রিসেট করুন"
+            android:textColor="#38BDF8"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <!-- Main Action Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAuthSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="লগইন করুন"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:backgroundTint="#2563EB"
+            app:cornerRadius="14dp" />
+
+        <ProgressBar
+            android:id="@+id/progressAuthLoading"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:indeterminateTint="#38BDF8"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Forgot Password View (Switched dynamically) -->
+    <LinearLayout
+        android:id="@+id/layoutForgotPasswordView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="পাসওয়ার্ড পুনরুদ্ধারের জন্য আপনার নিবন্ধিত ইমেইল লিখুন। আমরা আপনাকে পাসওয়ার্ড রিসেট লিংক পাঠাব:"
+            android:textColor="#CBD5E1"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/etForgotEmail"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/bg_glass_input"
+            android:hint="আপনার ইমেইল (Email)"
+            android:inputType="textEmailAddress"
+            android:paddingHorizontal="14dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#64748B"
+            android:textSize="14sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSendPasswordReset"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="6dp"
+            android:text="পাসওয়ার্ড রিসেট লিংক পাঠান"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:backgroundTint="#059669"
+            app:cornerRadius="14dp" />
+
+        <TextView
+            android:id="@+id/btnBackToLoginFromForgot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="6dp"
+            android:text="লগইন স্ক্রিনে ফিরে যান"
+            android:textColor="#94A3B8"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+</LinearLayout>
