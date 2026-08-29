@@ -212,7 +212,10 @@ public class AccountingService {
                     if (isSameDate(tx.getDate(), normalizedKey)) {
                         double amt = Math.max(0.0, tx.getAmount());
                         if ("BAKI".equalsIgnoreCase(tx.getType())) {
-                            creditSales += amt;
+                            // Only include in store daily sales if the user explicitly chose to add it to today's sales
+                            if (tx.isAddToDailySales()) {
+                                creditSales += amt;
+                            }
                         } else if ("JOMA".equalsIgnoreCase(tx.getType())) {
                             bakiCollection += amt;
                         }

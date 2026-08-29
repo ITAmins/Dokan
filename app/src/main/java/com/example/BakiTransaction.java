@@ -10,6 +10,7 @@ public class BakiTransaction implements Serializable {
     private double amount;
     private String note;
     private double balanceAfter;
+    private boolean addToDailySales = false; // Default false: Baki is kept separate from today's store sales unless explicitly chosen
     private long updatedAt;
     private long deletedAt;
 
@@ -25,6 +26,19 @@ public class BakiTransaction implements Serializable {
         this.amount = amount;
         this.note = note;
         this.balanceAfter = balanceAfter;
+        this.addToDailySales = false;
+        this.updatedAt = System.currentTimeMillis();
+    }
+
+    public BakiTransaction(String id, String date, String time, String type, double amount, String note, double balanceAfter, boolean addToDailySales) {
+        this.id = id;
+        this.date = date;
+        this.time = time;
+        this.type = type;
+        this.amount = amount;
+        this.note = note;
+        this.balanceAfter = balanceAfter;
+        this.addToDailySales = addToDailySales;
         this.updatedAt = System.currentTimeMillis();
     }
 
@@ -82,6 +96,14 @@ public class BakiTransaction implements Serializable {
 
     public void setBalanceAfter(double balanceAfter) {
         this.balanceAfter = balanceAfter;
+    }
+
+    public boolean isAddToDailySales() {
+        return this.addToDailySales;
+    }
+
+    public void setAddToDailySales(boolean addToDailySales) {
+        this.addToDailySales = addToDailySales;
     }
 
     public long getUpdatedAt() {

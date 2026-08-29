@@ -58,6 +58,29 @@ public class StorageManager {
         saveActiveDate(date);
     }
 
+    public boolean deleteExpense(String id) {
+        if (id == null || id.isEmpty()) return false;
+        List<String> activeDates = getActiveDates();
+        for (String d : activeDates) {
+            List<ExpenseModel> exps = loadExpenses(d);
+            if (exps != null) {
+                boolean removed = false;
+                for (int i = 0; i < exps.size(); i++) {
+                    if (id.equals(exps.get(i).getId())) {
+                        exps.remove(i);
+                        removed = true;
+                        break;
+                    }
+                }
+                if (removed) {
+                    saveExpenses(d, exps);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public List<ExpenseModel> getAllExpenses() {
         List<ExpenseModel> all = new ArrayList<>();
         List<String> activeDates = getActiveDates();
@@ -554,6 +577,14 @@ public class StorageManager {
             }
         } catch (Exception ignored) {}
         return 0.0;
+    }
+
+    public boolean isFordiCardlessMode() {
+        return this.sharedPreferences.getBoolean("key_fordi_cardless_mode", true);
+    }
+
+    public void setFordiCardlessMode(boolean cardless) {
+        this.sharedPreferences.edit().putBoolean("key_fordi_cardless_mode", cardless).apply();
     }
 
     public void clearAll() {

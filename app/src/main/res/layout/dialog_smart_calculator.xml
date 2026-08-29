@@ -445,6 +445,95 @@
                 app:backgroundTint="#059669"
                 app:cornerRadius="10dp" />
         </LinearLayout>
+
+        <!-- Quick Percentage Shortcuts Row -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="2dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCalcQuickPlus5"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="4dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="0dp"
+                    android:text="+৫%"
+                    android:textColor="#059669"
+                    android:textSize="11.5sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#ECFDF5"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCalcQuickPlus10"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="4dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="0dp"
+                    android:text="+১০%"
+                    android:textColor="#059669"
+                    android:textSize="11.5sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#ECFDF5"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCalcQuickPlus15"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="4dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="0dp"
+                    android:text="+১৫%"
+                    android:textColor="#059669"
+                    android:textSize="11.5sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#ECFDF5"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCalcQuickMinus5"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="4dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="0dp"
+                    android:text="-৫%"
+                    android:textColor="#DC2626"
+                    android:textSize="11.5sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#FEF2F2"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCalcQuickMinus10"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="0dp"
+                    android:text="-১০%"
+                    android:textColor="#DC2626"
+                    android:textSize="11.5sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#FEF2F2"
+                    app:cornerRadius="8dp" />
+            </LinearLayout>
+        </HorizontalScrollView>
     </LinearLayout>
 
     <!-- 2. RATE × QUANTITY VIEW -->

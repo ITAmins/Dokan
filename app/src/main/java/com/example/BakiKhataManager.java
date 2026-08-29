@@ -1067,12 +1067,15 @@ public class BakiKhataManager {
             dp.show();
         });
 
+        CheckBox cbAddToDailySale = dialogView.findViewById(R.id.cbDlgDueAddToDailySale);
+
         btnSave.setOnClickListener(v -> {
             String name = actvName.getText().toString().trim();
             String phone = etPhone.getText().toString().trim();
             String amtStr = etAmount.getText().toString().trim();
             String details = actvDetails.getText().toString().trim();
             String dueDate = etDueDate.getText().toString().trim();
+            boolean addToDailySale = cbAddToDailySale != null && cbAddToDailySale.isChecked();
 
             if (name.isEmpty()) {
                 tilName.setError("খরিদ্দারের নাম লিখুন");
@@ -1113,12 +1116,12 @@ public class BakiKhataManager {
                     if (!details.isEmpty()) existing.setDetails(details);
                     existing.setDate(curDate);
 
-                    BakiTransaction tx = new BakiTransaction(UUID.randomUUID().toString(), curDate, curTime, "BAKI", amount, details.isEmpty() ? "বাকি যোগ" : details, newTotal);
+                    BakiTransaction tx = new BakiTransaction(UUID.randomUUID().toString(), curDate, curTime, "BAKI", amount, details.isEmpty() ? "বাকি যোগ" : details, newTotal, addToDailySale);
                     existing.addTransaction(tx);
                 } else {
                     String id = UUID.randomUUID().toString();
                     BakiModel newRecord = new BakiModel(id, name, phone, amount, curDate, dueDate, details);
-                    BakiTransaction tx = new BakiTransaction(UUID.randomUUID().toString(), curDate, curTime, "BAKI", amount, details.isEmpty() ? "নতুন বাকি শুরু" : details, amount);
+                    BakiTransaction tx = new BakiTransaction(UUID.randomUUID().toString(), curDate, curTime, "BAKI", amount, details.isEmpty() ? "নতুন বাকি শুরু" : details, amount, addToDailySale);
                     newRecord.addTransaction(tx);
                     list.add(0, newRecord);
                 }

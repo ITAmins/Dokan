@@ -79,6 +79,10 @@ public class MawaSyncManager {
         void onSyncFailed(String error);
     }
 
+    public interface OnRemoteDataChangeListener {
+        void onRemoteDataChanged();
+    }
+
     private static MawaSyncManager instance;
     private final Context context;
     private final StorageManager storageManager;
@@ -91,6 +95,51 @@ public class MawaSyncManager {
     private SyncStatus currentStatus = SyncStatus.NOT_SIGNED_IN;
     private String lastSyncTimeFormatted = "কখনো নয়";
     private final List<SyncListener> listeners = new ArrayList<>();
+    private final List<OnRemoteDataChangeListener> remoteChangeListeners = new ArrayList<>();
+
+    private boolean isRealtimeActive = false;
+    private final Runnable realtimePollingRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!isRealtimeActive) return;
+            if (authManager.isAuthenticated() && authManager.isNetworkAvailable() && !isSyncing()) {
+                executor.execute(() -> {
+                    try {
+                        String userId = authManager.getUserId();
+                        String accessToken = authManager.getAccessToken();
+                        String supabaseUrl = authManager.getSupabaseUrl();
+                        String supabaseKey = authManager.getSupabaseKey();
+                        if (userId != null && accessToken != null) {
+                            boolean hasChanges = pullAndMergeCloudData(supabaseUrl, supabaseKey, accessToken, userId);
+                            if (hasChanges) {
+                                mainHandler.post(() -> {
+                                    for (OnRemoteDataChangeListener l : new ArrayList<>(remoteChangeListeners)) {
+                                        try {
+                                            l.onRemoteDataChanged();
+                                        } catch (Exception ignored) {}
+                                    }
+                                });
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.w(TAG, "Realtime poll error: " + e.getMessage());
+                    }
+                });
+            }
+            if (isRealtimeActive) {
+                mainHandler.postDelayed(this, 5000); // Check every 5 seconds for live multi-device updates
+            }
+        }
+    };
+
+    private final Runnable debouncedPushRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (authManager.isAuthenticated() && authManager.isNetworkAvailable()) {
+                triggerSync(null);
+            }
+        }
+    };
 
     private MawaSyncManager(Context context) {
         this.context = context.getApplicationContext();
@@ -109,6 +158,32 @@ public class MawaSyncManager {
             instance = new MawaSyncManager(context);
         }
         return instance;
+    }
+
+    public void addRemoteDataChangeListener(OnRemoteDataChangeListener listener) {
+        if (listener != null && !remoteChangeListeners.contains(listener)) {
+            remoteChangeListeners.add(listener);
+        }
+    }
+
+    public void removeRemoteDataChangeListener(OnRemoteDataChangeListener listener) {
+        remoteChangeListeners.remove(listener);
+    }
+
+    public void startRealtimeSync() {
+        isRealtimeActive = true;
+        mainHandler.removeCallbacks(realtimePollingRunnable);
+        mainHandler.postDelayed(realtimePollingRunnable, 2000);
+    }
+
+    public void stopRealtimeSync() {
+        isRealtimeActive = false;
+        mainHandler.removeCallbacks(realtimePollingRunnable);
+    }
+
+    public void notifyLocalChange() {
+        mainHandler.removeCallbacks(debouncedPushRunnable);
+        mainHandler.postDelayed(debouncedPushRunnable, 1500);
     }
 
     public void addListener(SyncListener listener) {
@@ -262,7 +337,7 @@ public class MawaSyncManager {
     /**
      * Pull remote cloud backup and safely merge with local data.
      */
-    private void pullAndMergeCloudData(String url, String apikey, String token, String userId) {
+    private boolean pullAndMergeCloudData(String url, String apikey, String token, String userId) {
         try {
             String endpoint = url + "/rest/v1/user_backups?user_id=eq." + userId + "&order=updated_at.desc&limit=1";
             Request request = new Request.Builder()
@@ -285,20 +360,22 @@ public class MawaSyncManager {
                         cloudData = latestBackup.getAsJsonObject("data");
                     }
                     if (cloudData != null) {
-                        mergeCloudDataIntoLocal(cloudData);
+                        return mergeCloudDataIntoLocal(cloudData);
                     }
                 }
             }
         } catch (Exception e) {
             Log.e(TAG, "Error pulling remote backup: ", e);
         }
+        return false;
     }
 
     /**
      * Merge cloud data safely into local StorageManager without deleting existing records
      */
-    private void mergeCloudDataIntoLocal(JsonObject cloudData) {
-        if (cloudData == null) return;
+    private boolean mergeCloudDataIntoLocal(JsonObject cloudData) {
+        if (cloudData == null) return false;
+        boolean modified = false;
 
         try {
             // 1. Merge Products
@@ -309,6 +386,7 @@ public class MawaSyncManager {
                 for (ProductModel p : localProducts) {
                     map.put(p.getName().toLowerCase(), p);
                 }
+                int initialCount = map.size();
                 for (JsonElement elem : cloudProducts) {
                     try {
                         ProductModel cp = gson.fromJson(elem, ProductModel.class);
@@ -316,11 +394,14 @@ public class MawaSyncManager {
                             String k = cp.getName().toLowerCase();
                             if (!map.containsKey(k) || map.get(k).getUpdatedAt() < cp.getUpdatedAt()) {
                                 map.put(k, cp);
+                                modified = true;
                             }
                         }
                     } catch (Exception ignored) {}
                 }
-                storageManager.saveProductMemory(new ArrayList<>(map.values()));
+                if (modified || map.size() != initialCount) {
+                    storageManager.saveProductMemory(new ArrayList<>(map.values()));
+                }
             }
 
             // 2. Merge Baki Records
@@ -331,17 +412,21 @@ public class MawaSyncManager {
                 for (BakiModel b : localBaki) {
                     bakiMap.put(b.getId(), b);
                 }
+                int initialBaki = bakiMap.size();
                 for (JsonElement elem : cloudBaki) {
                     try {
                         BakiModel cb = gson.fromJson(elem, BakiModel.class);
                         if (cb != null && cb.getId() != null) {
                             if (!bakiMap.containsKey(cb.getId()) || bakiMap.get(cb.getId()).getUpdatedAt() < cb.getUpdatedAt()) {
                                 bakiMap.put(cb.getId(), cb);
+                                modified = true;
                             }
                         }
                     } catch (Exception ignored) {}
                 }
-                storageManager.saveBakiRecords(new ArrayList<>(bakiMap.values()));
+                if (modified || bakiMap.size() != initialBaki) {
+                    storageManager.saveBakiRecords(new ArrayList<>(bakiMap.values()));
+                }
             }
 
             // 3. Merge Fordi Records
@@ -352,17 +437,21 @@ public class MawaSyncManager {
                 for (FordiModel f : localFordi) {
                     fordiMap.put(f.getId(), f);
                 }
+                int initialFordi = fordiMap.size();
                 for (JsonElement elem : cloudFordi) {
                     try {
                         FordiModel cf = gson.fromJson(elem, FordiModel.class);
                         if (cf != null && cf.getId() != null) {
                             if (!fordiMap.containsKey(cf.getId()) || fordiMap.get(cf.getId()).getUpdatedAt() < cf.getUpdatedAt()) {
                                 fordiMap.put(cf.getId(), cf);
+                                modified = true;
                             }
                         }
                     } catch (Exception ignored) {}
                 }
-                storageManager.saveFordiRecords(new ArrayList<>(fordiMap.values()));
+                if (modified || fordiMap.size() != initialFordi) {
+                    storageManager.saveFordiRecords(new ArrayList<>(fordiMap.values()));
+                }
             }
 
             // 4. Merge Expenses for active dates
@@ -376,22 +465,56 @@ public class MawaSyncManager {
                     for (ExpenseModel e : localList) {
                         if (e.getId() != null) expMap.put(e.getId(), e);
                     }
+                    int initialExp = expMap.size();
                     for (JsonElement el : dateExps) {
                         try {
                             ExpenseModel ce = gson.fromJson(el, ExpenseModel.class);
                             if (ce != null && ce.getId() != null) {
                                 if (!expMap.containsKey(ce.getId()) || expMap.get(ce.getId()).getUpdatedAt() < ce.getUpdatedAt()) {
                                     expMap.put(ce.getId(), ce);
+                                    modified = true;
                                 }
                             }
                         } catch (Exception ignored) {}
                     }
-                    storageManager.saveExpenses(dateKey, new ArrayList<>(expMap.values()));
+                    if (modified || expMap.size() != initialExp) {
+                        storageManager.saveExpenses(dateKey, new ArrayList<>(expMap.values()));
+                    }
+                }
+            }
+
+            // 5. Merge Cash info if present
+            if (cloudData.has("sabek_cash_by_date")) {
+                JsonObject scObj = cloudData.getAsJsonObject("sabek_cash_by_date");
+                for (String d : scObj.keySet()) {
+                    try {
+                        double remoteVal = scObj.get(d).getAsDouble();
+                        double localVal = storageManager.loadSabekCash(d);
+                        if (Math.abs(remoteVal - localVal) > 0.01) {
+                            storageManager.saveSabekCash(d, remoteVal);
+                            modified = true;
+                        }
+                    } catch (Exception ignored) {}
+                }
+            }
+
+            if (cloudData.has("available_cash_by_date")) {
+                JsonObject acObj = cloudData.getAsJsonObject("available_cash_by_date");
+                for (String d : acObj.keySet()) {
+                    try {
+                        double remoteVal = acObj.get(d).getAsDouble();
+                        double localVal = storageManager.loadAvailableCash(d);
+                        if (Math.abs(remoteVal - localVal) > 0.01) {
+                            storageManager.saveAvailableCash(d, remoteVal);
+                            modified = true;
+                        }
+                    } catch (Exception ignored) {}
                 }
             }
         } catch (Exception e) {
             Log.e(TAG, "Error merging cloud data: ", e);
         }
+        return modified;
     }
 
     /**
@@ -405,11 +528,18 @@ public class MawaSyncManager {
             backupData.add("fordi_records", gson.toJsonTree(storageManager.loadFordiRecords()));
 
             JsonObject expensesByDate = new JsonObject();
+            JsonObject sabekCashByDate = new JsonObject();
+            JsonObject availableCashByDate = new JsonObject();
+
             List<String> activeDates = storageManager.getActiveDates();
             for (String d : activeDates) {
                 expensesByDate.add(d, gson.toJsonTree(storageManager.loadExpenses(d)));
+                sabekCashByDate.addProperty(d, storageManager.loadSabekCash(d));
+                availableCashByDate.addProperty(d, storageManager.loadAvailableCash(d));
             }
             backupData.add("expenses_by_date", expensesByDate);
+            backupData.add("sabek_cash_by_date", sabekCashByDate);
+            backupData.add("available_cash_by_date", availableCashByDate);
             backupData.addProperty("estimated_gross_margin", storageManager.getEstimatedGrossMarginRate());
 
             JsonObject row = new JsonObject();
