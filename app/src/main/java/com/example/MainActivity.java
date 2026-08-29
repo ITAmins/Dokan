@@ -4434,6 +4434,7 @@ public class MainActivity extends AppCompatActivity {
         this.binding.tvFordiMainDateSubtitle.setText(activeFordi.getTitle() + " • " + activeFordi.getDate() + " | মোট: ৳" + PdfExporter.formatBengaliNumber(activeFordi.getPlannedTotal()) + " • কেনা: ৳" + PdfExporter.formatBengaliNumber(activeFordi.getCheckedTotal()));
 
         // Green highlight banner for checked items
+        double plannedSum = activeFordi.getPlannedTotal();
         double checkedSum = activeFordi.getCheckedTotal();
         int checkedCount = activeFordi.getCheckedItemCount();
         if (checkedCount > 0) {
@@ -4461,7 +4462,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Render previous fordis list in history tab
-        renderFordiHistoryList(allFordi, activeFordi.getId());
+        populateSavedFordiList(allFordi, activeFordi.getId());
     }
 
     private void renderFordiTableRows(FordiModel activeFordi, String query) {
@@ -4885,6 +4886,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Populate Other Saved Fordis below main card
+        List<FordiModel> allFordi = StorageManager.getInstance(this).loadFordiRecords();
         populateSavedFordiList(allFordi, activeFordi.getId());
     }
 
