@@ -94,6 +94,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1011,31 +1012,38 @@ public class MainActivity extends AppCompatActivity {
         // Category selection: 🏬 দোকান খরচ, 🏠 সংসার / বাড়ি, 🛒 পণ্য ক্রয়
         View.OnClickListener categoryClickListener = v -> {
             if (binding == null) return;
+            // Reset all to unselected
             if (binding.btnDrawerTypeShop != null) {
                 binding.btnDrawerTypeShop.setBackgroundResource(R.drawable.bg_dark_chip_unselected);
-                binding.btnDrawerTypeShop.setTextColor(Color.parseColor("#94A3B8"));
+                if (binding.tvDrawerTypeShop != null) binding.tvDrawerTypeShop.setTextColor(Color.parseColor("#94A3B8"));
+                if (binding.ivDrawerTypeShop != null) binding.ivDrawerTypeShop.setImageTintList(ColorStateList.valueOf(Color.parseColor("#94A3B8")));
             }
             if (binding.btnDrawerTypeHome != null) {
                 binding.btnDrawerTypeHome.setBackgroundResource(R.drawable.bg_dark_chip_unselected);
-                binding.btnDrawerTypeHome.setTextColor(Color.parseColor("#94A3B8"));
+                if (binding.tvDrawerTypeHome != null) binding.tvDrawerTypeHome.setTextColor(Color.parseColor("#94A3B8"));
+                if (binding.ivDrawerTypeHome != null) binding.ivDrawerTypeHome.setImageTintList(ColorStateList.valueOf(Color.parseColor("#94A3B8")));
             }
             if (binding.btnDrawerTypeProductBuy != null) {
                 binding.btnDrawerTypeProductBuy.setBackgroundResource(R.drawable.bg_dark_chip_unselected);
-                binding.btnDrawerTypeProductBuy.setTextColor(Color.parseColor("#94A3B8"));
+                if (binding.tvDrawerTypeProductBuy != null) binding.tvDrawerTypeProductBuy.setTextColor(Color.parseColor("#94A3B8"));
+                if (binding.ivDrawerTypeProductBuy != null) binding.ivDrawerTypeProductBuy.setImageTintList(ColorStateList.valueOf(Color.parseColor("#94A3B8")));
             }
 
             if (v.getId() == R.id.btnDrawerTypeShop) {
                 selectedExpenseType = ExpenseModel.TYPE_SHOP;
-                binding.btnDrawerTypeShop.setBackgroundResource(R.drawable.bg_dark_chip_selected_red);
-                binding.btnDrawerTypeShop.setTextColor(Color.WHITE);
+                binding.btnDrawerTypeShop.setBackgroundResource(R.drawable.bg_dark_category_store_selected);
+                if (binding.tvDrawerTypeShop != null) binding.tvDrawerTypeShop.setTextColor(Color.WHITE);
+                if (binding.ivDrawerTypeShop != null) binding.ivDrawerTypeShop.setImageTintList(ColorStateList.valueOf(Color.WHITE));
             } else if (v.getId() == R.id.btnDrawerTypeHome) {
                 selectedExpenseType = ExpenseModel.TYPE_HOME;
                 binding.btnDrawerTypeHome.setBackgroundResource(R.drawable.bg_dark_chip_selected_purple);
-                binding.btnDrawerTypeHome.setTextColor(Color.WHITE);
+                if (binding.tvDrawerTypeHome != null) binding.tvDrawerTypeHome.setTextColor(Color.WHITE);
+                if (binding.ivDrawerTypeHome != null) binding.ivDrawerTypeHome.setImageTintList(ColorStateList.valueOf(Color.WHITE));
             } else if (v.getId() == R.id.btnDrawerTypeProductBuy) {
                 selectedExpenseType = ExpenseModel.TYPE_SHOP;
                 binding.btnDrawerTypeProductBuy.setBackgroundResource(R.drawable.bg_dark_chip_selected_green);
-                binding.btnDrawerTypeProductBuy.setTextColor(Color.WHITE);
+                if (binding.tvDrawerTypeProductBuy != null) binding.tvDrawerTypeProductBuy.setTextColor(Color.WHITE);
+                if (binding.ivDrawerTypeProductBuy != null) binding.ivDrawerTypeProductBuy.setImageTintList(ColorStateList.valueOf(Color.WHITE));
                 if (binding.etDrawerExpenseName != null && binding.etDrawerExpenseName.getText().toString().isEmpty()) {
                     binding.etDrawerExpenseName.setText("মাল কেনা");
                     binding.etDrawerExpenseName.setSelection(binding.etDrawerExpenseName.getText().length());
@@ -1051,6 +1059,28 @@ public class MainActivity extends AppCompatActivity {
         }
         if (this.binding.btnDrawerTypeProductBuy != null) {
             this.binding.btnDrawerTypeProductBuy.setOnClickListener(categoryClickListener);
+        }
+
+        // Voice input & QR scanner buttons
+        if (this.binding.btnDrawerVoiceInput != null) {
+            this.binding.btnDrawerVoiceInput.setOnClickListener(v -> {
+                promptVoiceInput();
+            });
+        }
+        if (this.binding.btnDrawerScanQr != null) {
+            this.binding.btnDrawerScanQr.setOnClickListener(v -> {
+                initiateUniversalScanner();
+            });
+        }
+        if (this.binding.btnDrawerBarcodeScan != null) {
+            this.binding.btnDrawerBarcodeScan.setOnClickListener(v -> {
+                initiateUniversalScanner();
+            });
+        }
+        if (this.binding.btnHeaderCalculator != null) {
+            this.binding.btnHeaderCalculator.setOnClickListener(v -> {
+                showSmartCalculatorDialog();
+            });
         }
 
         // Date selection
@@ -1302,52 +1332,7 @@ public class MainActivity extends AppCompatActivity {
         this.binding.btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                androidx.appcompat.widget.PopupMenu popup = new androidx.appcompat.widget.PopupMenu(MainActivity.this, view);
-                popup.getMenu().add(0, 1, 0, "এক্সপোর্ট সেন্টার (PDF, JPG, CSV)");
-                popup.getMenu().add(0, 2, 1, "মেমো PDF ডাউনলোড");
-                popup.getMenu().add(0, 3, 2, "মেমো JPG ডাউনলোড");
-                popup.getMenu().add(0, 4, 3, "CSV এক্সেল ডাউনলোড");
-                popup.getMenu().add(0, 5, 4, "আজকের রিপোর্ট শেয়ার");
-                popup.getMenu().add(0, 6, 5, "হিসাব রিলোড করুন");
-                popup.getMenu().add(0, 7, 6, "হিসাব রিসেট করুন");
-                popup.getMenu().add(0, 8, 7, "শতকরা লাভের হার নির্ধারণ (মার্জিন)");
-                popup.setOnMenuItemClickListener(new androidx.appcompat.widget.PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        int id = item.getItemId();
-                        if (id == 1) {
-                            showExportCenterDialog();
-                            return true;
-                        } else if (id == 2) {
-                            triggerPdfExport(true);
-                            return true;
-                        } else if (id == 3) {
-                            triggerJpgExport(true);
-                            return true;
-                        } else if (id == 4) {
-                            triggerCsvExport(true);
-                            return true;
-                        } else if (id == 5) {
-                            shareDailyReport();
-                            return true;
-                        } else if (id == 6) {
-                            if (viewModel != null) {
-                                viewModel.loadSavedData();
-                                updateDashboardUI();
-                                Toast.makeText(MainActivity.this, "হিসাব হালনাগাদ (রিলোড) হয়েছে", Toast.LENGTH_SHORT).show();
-                            }
-                            return true;
-                        } else if (id == 7) {
-                            showClearAllConfirmationDialog();
-                            return true;
-                        } else if (id == 8) {
-                            showProfitMarginDialog();
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                popup.show();
+                showSideNavigationDrawerDialog();
             }
         });
 
@@ -2167,8 +2152,26 @@ public class MainActivity extends AppCompatActivity {
         if (this.binding.btnFilterThisWeek != null) {
             this.binding.btnFilterThisWeek.setOnClickListener(dashFilterListener);
         }
-        this.binding.btnFilterThisMonth.setOnClickListener(dashFilterListener);
-        this.binding.btnFilterAllTime.setOnClickListener(dashFilterListener);
+        if (this.binding.btnFilterThisMonth != null) {
+            this.binding.btnFilterThisMonth.setOnClickListener(dashFilterListener);
+        }
+        if (this.binding.btnFilterAllTime != null) {
+            this.binding.btnFilterAllTime.setOnClickListener(dashFilterListener);
+        }
+
+        setupTrendLineControls();
+
+        View.OnClickListener openComposeDashboardListener = v -> {
+            Intent intent = new Intent();
+            intent.setClassName(MainActivity.this, "com.example.ui.dashboard.ComposeDashboardActivity");
+            startActivity(intent);
+        };
+        if (this.binding.btnOpenComposeDashboard != null) {
+            this.binding.btnOpenComposeDashboard.setOnClickListener(openComposeDashboardListener);
+        }
+        if (this.binding.cardOpenComposeDashboard != null) {
+            this.binding.cardOpenComposeDashboard.setOnClickListener(openComposeDashboardListener);
+        }
     }
 
     private void setupBottomNavigationBar() {
@@ -2177,8 +2180,8 @@ public class MainActivity extends AppCompatActivity {
         if (this.binding.navItemHome != null) {
             this.binding.navItemHome.setOnClickListener(v -> selectBottomTab(0));
         }
-        if (this.binding.navItemReport != null) {
-            this.binding.navItemReport.setOnClickListener(v -> selectBottomTab(1));
+        if (this.binding.navItemFordi != null) {
+            this.binding.navItemFordi.setOnClickListener(v -> selectBottomTab(3));
         }
         if (this.binding.navItemBaki != null) {
             this.binding.navItemBaki.setOnClickListener(v -> selectBottomTab(2));
@@ -2186,11 +2189,16 @@ public class MainActivity extends AppCompatActivity {
         if (this.binding.btnNavCenterExpense != null) {
             this.binding.btnNavCenterExpense.setOnClickListener(v -> openExpenseDrawer());
         }
-        if (this.binding.navItemFordi != null) {
-            this.binding.navItemFordi.setOnClickListener(v -> selectBottomTab(3));
+        if (this.binding.navItemPersonal != null) {
+            this.binding.navItemPersonal.setOnClickListener(v -> {
+                Toast.makeText(this, "ব্যক্তিগত হিসাব", Toast.LENGTH_SHORT).show();
+            });
         }
         if (this.binding.navItemHomeExpense != null) {
             this.binding.navItemHomeExpense.setOnClickListener(v -> selectBottomTab(4));
+        }
+        if (this.binding.navItemReport != null) {
+            this.binding.navItemReport.setOnClickListener(v -> selectBottomTab(1));
         }
 
         updateBottomNavVisuals(0);
@@ -2209,8 +2217,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateBottomNavVisuals(int selectedIndex) {
         if (this.binding == null) return;
-        int activeColor = Color.parseColor("#2563EB");
-        int inactiveColor = Color.parseColor("#64748B");
+        int activeColor = Color.parseColor("#C4B5FD");
+        int inactiveColor = Color.parseColor("#94A3B8");
 
         // 0: Home
         if (this.binding.ivNavHome != null && this.binding.tvNavHome != null) {
@@ -2218,6 +2226,9 @@ public class MainActivity extends AppCompatActivity {
             this.binding.ivNavHome.setImageTintList(ColorStateList.valueOf(active ? activeColor : inactiveColor));
             this.binding.tvNavHome.setTextColor(active ? activeColor : inactiveColor);
             this.binding.tvNavHome.setTypeface(null, active ? Typeface.BOLD : Typeface.NORMAL);
+            if (this.binding.layoutNavHomePill != null) {
+                this.binding.layoutNavHomePill.setBackgroundResource(active ? R.drawable.bg_nav_active_pill : 0);
+            }
         }
         // 1: Report
         if (this.binding.ivNavReport != null && this.binding.tvNavReport != null) {
@@ -2326,8 +2337,10 @@ public class MainActivity extends AppCompatActivity {
             rangeExpenses3.addAll(storage.loadExpenses(it.next().dateKey));
             remainingValue = remainingValue;
         }
-        this.binding.pieChartView.setExpenses(rangeExpenses3);
-        this.binding.lineGraphView.setData(filtered);
+        populateCompanyPurchasesUI(rangeExpenses3);
+        if (this.binding.includeAnalytics != null && this.binding.includeAnalytics.lineGraphView != null) {
+            this.binding.includeAnalytics.lineGraphView.setData(filtered);
+        }
         if (filtered.isEmpty()) {
             rangeExpenses = rangeExpenses3;
             avgSales = d;
@@ -2506,6 +2519,296 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
             }
         }
+    }
+
+    private void setupTrendLineControls() {
+        if (this.binding == null || this.binding.includeAnalytics == null || this.binding.includeAnalytics.lineGraphView == null) return;
+
+        View.OnClickListener trendFilterListener = v -> {
+            if (this.binding == null || this.binding.includeAnalytics == null || this.binding.includeAnalytics.lineGraphView == null) return;
+
+            // Reset buttons
+            if (this.binding.includeAnalytics.btnTrendAll != null) {
+                this.binding.includeAnalytics.btnTrendAll.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F1F5F9")));
+                this.binding.includeAnalytics.btnTrendAll.setTextColor(Color.parseColor("#475569"));
+            }
+            if (this.binding.includeAnalytics.btnTrendSales != null) {
+                this.binding.includeAnalytics.btnTrendSales.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F1F5F9")));
+                this.binding.includeAnalytics.btnTrendSales.setTextColor(Color.parseColor("#475569"));
+            }
+            if (this.binding.includeAnalytics.btnTrendPurchases != null) {
+                this.binding.includeAnalytics.btnTrendPurchases.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F1F5F9")));
+                this.binding.includeAnalytics.btnTrendPurchases.setTextColor(Color.parseColor("#475569"));
+            }
+
+            if (v.getId() == R.id.btnTrendSales) {
+                this.binding.includeAnalytics.lineGraphView.setDisplayMode(LineGraphView.MODE_SALES);
+                if (this.binding.includeAnalytics.btnTrendSales != null) {
+                    this.binding.includeAnalytics.btnTrendSales.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0D9488")));
+                    this.binding.includeAnalytics.btnTrendSales.setTextColor(Color.WHITE);
+                }
+            } else if (v.getId() == R.id.btnTrendPurchases) {
+                this.binding.includeAnalytics.lineGraphView.setDisplayMode(LineGraphView.MODE_PURCHASE);
+                if (this.binding.includeAnalytics.btnTrendPurchases != null) {
+                    this.binding.includeAnalytics.btnTrendPurchases.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0D9488")));
+                    this.binding.includeAnalytics.btnTrendPurchases.setTextColor(Color.WHITE);
+                }
+            } else {
+                this.binding.includeAnalytics.lineGraphView.setDisplayMode(LineGraphView.MODE_ALL);
+                if (this.binding.includeAnalytics.btnTrendAll != null) {
+                    this.binding.includeAnalytics.btnTrendAll.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0D9488")));
+                    this.binding.includeAnalytics.btnTrendAll.setTextColor(Color.WHITE);
+                }
+            }
+        };
+
+        if (this.binding.includeAnalytics.btnTrendAll != null) this.binding.includeAnalytics.btnTrendAll.setOnClickListener(trendFilterListener);
+        if (this.binding.includeAnalytics.btnTrendSales != null) this.binding.includeAnalytics.btnTrendSales.setOnClickListener(trendFilterListener);
+        if (this.binding.includeAnalytics.btnTrendPurchases != null) this.binding.includeAnalytics.btnTrendPurchases.setOnClickListener(trendFilterListener);
+
+        this.binding.includeAnalytics.lineGraphView.setOnDaySelectedListener((summary, index) -> {
+            if (this.binding == null || this.binding.includeAnalytics == null || summary == null) return;
+            if (this.binding.includeAnalytics.cardSelectedDayDetails != null) {
+                this.binding.includeAnalytics.cardSelectedDayDetails.setVisibility(View.VISIBLE);
+            }
+            if (this.binding.includeAnalytics.tvSelectedDayTitle != null) {
+                this.binding.includeAnalytics.tvSelectedDayTitle.setText(formatBengaliLongDate(summary.dateKey) + " " + getBengaliDayFromDateKey(summary.dateKey));
+            }
+            if (this.binding.includeAnalytics.tvSelectedDayTxCount != null) {
+                this.binding.includeAnalytics.tvSelectedDayTxCount.setText(PdfExporter.toBengaliDigits(String.valueOf(index + 1)) + " নং দিন");
+            }
+            if (this.binding.includeAnalytics.tvSelectedDaySales != null) {
+                this.binding.includeAnalytics.tvSelectedDaySales.setText("মোট বিক্রি: ৳" + PdfExporter.formatBengaliNumber(summary.computedSale));
+            }
+            if (this.binding.includeAnalytics.tvSelectedDaySalesBreakdown != null) {
+                this.binding.includeAnalytics.tvSelectedDaySalesBreakdown.setText("• নগদ: ৳" + PdfExporter.formatBengaliNumber(summary.availableCash) + " | সাবেক: ৳" + PdfExporter.formatBengaliNumber(summary.sabek));
+            }
+            if (this.binding.includeAnalytics.tvSelectedDayPurchase != null) {
+                this.binding.includeAnalytics.tvSelectedDayPurchase.setText("মাল ক্রয়: ৳" + PdfExporter.formatBengaliNumber(summary.expenses));
+            }
+            if (this.binding.includeAnalytics.tvSelectedDayExpAndProfit != null) {
+                String profitText = (summary.margin >= 0 ? "লাভ: ৳" : "ঘাটতি: ৳") + PdfExporter.formatBengaliNumber(Math.abs(summary.margin));
+                this.binding.includeAnalytics.tvSelectedDayExpAndProfit.setText(profitText);
+                this.binding.includeAnalytics.tvSelectedDayExpAndProfit.setTextColor(summary.margin >= 0 ? Color.parseColor("#059669") : Color.parseColor("#DC2626"));
+            }
+
+            if (this.binding.includeAnalytics.cardSelectedDayDetails != null) {
+                this.binding.includeAnalytics.cardSelectedDayDetails.setOnClickListener(v -> {
+                    String[] parts = summary.dateKey.split("-");
+                    if (parts.length == 3) {
+                        try {
+                            int d = Integer.parseInt(parts[0]);
+                            int m = Integer.parseInt(parts[1]) - 1;
+                            int y = Integer.parseInt(parts[2]);
+                            this.viewModel.selectDate(y, m, d);
+                            TabLayout.Tab tab = this.binding.tabLayout.getTabAt(0);
+                            if (tab != null) tab.select();
+                            Toast.makeText(this, summary.dateKey + " তারিখের হিসাব খোলা হয়েছে", Toast.LENGTH_SHORT).show();
+                        } catch (Exception ignored) {}
+                    }
+                });
+            }
+        });
+    }
+
+    private void populateCompanyPurchasesUI(List<ExpenseModel> expenses) {
+        if (this.binding == null || this.binding.includeAnalytics == null) return;
+
+        Map<String, CompanyPurchaseSummary> companyMap = new LinkedHashMap<>();
+        double grandTotal = 0.0;
+
+        int[] colors = new int[]{
+                Color.parseColor("#F59E0B"), // Amber
+                Color.parseColor("#3B82F6"), // Blue
+                Color.parseColor("#10B981"), // Emerald
+                Color.parseColor("#8B5CF6"), // Purple
+                Color.parseColor("#EC4899"), // Pink
+                Color.parseColor("#06B6D4"), // Cyan
+                Color.parseColor("#F97316"), // Orange
+                Color.parseColor("#6366F1"), // Indigo
+                Color.parseColor("#14B8A6"), // Teal
+                Color.parseColor("#64748B")  // Slate
+        };
+
+        if (expenses != null && !expenses.isEmpty()) {
+            for (ExpenseModel exp : expenses) {
+                String rawName = exp.getName() != null ? exp.getName().trim() : "অন্যান্য";
+                if (rawName.isEmpty()) rawName = "অন্যান্য";
+                grandTotal += exp.getAmount();
+
+                CompanyPurchaseSummary summary = companyMap.get(rawName);
+                if (summary == null) {
+                    int color = colors[companyMap.size() % colors.length];
+                    summary = new CompanyPurchaseSummary(rawName, 0.0, 0.0, color);
+                    companyMap.put(rawName, summary);
+                }
+                summary.setTotalAmount(summary.getTotalAmount() + exp.getAmount());
+
+                String date = exp.getDate() != null ? exp.getDate() : "";
+                String time = exp.getTime() != null ? exp.getTime() : "";
+                boolean isPurchase = ExpenseModel.TYPE_PURCHASE.equalsIgnoreCase(exp.getType());
+                String dealer = isPurchase ? "সরাসরি ডিলার" : "দোকান সরবরাহ";
+                String note = (exp.getNote() != null && !exp.getNote().isEmpty()) ? exp.getNote() : (isPurchase ? "পণ্য ক্রয় চালান" : "সাধারণ খরচ ভাউচার");
+                summary.addVoucher(new CompanyPurchaseSummary.PurchaseVoucher(
+                        exp.getId(),
+                        date,
+                        time,
+                        exp.getAmount(),
+                        isPurchase ? "সরাসরি ক্রয়" : "সাধারণ খরচ",
+                        dealer,
+                        note
+                ));
+            }
+        }
+
+        List<CompanyPurchaseSummary> summaryList = new ArrayList<>(companyMap.values());
+        Collections.sort(summaryList, (a, b) -> Double.compare(b.getTotalAmount(), a.getTotalAmount()));
+
+        for (CompanyPurchaseSummary s : summaryList) {
+            if (grandTotal > 0) {
+                s.setSharePercentage((s.getTotalAmount() / grandTotal) * 100.0);
+            }
+        }
+
+        // Set pie chart data
+        if (this.binding.includeAnalytics.pieChartView != null) {
+            this.binding.includeAnalytics.pieChartView.setCompanyPurchases(summaryList);
+            this.binding.includeAnalytics.pieChartView.setOnSliceClickListener((slice, index) -> {
+                if (index >= 0 && index < summaryList.size()) {
+                    showCompanyPurchaseHistoryDialog(summaryList.get(index));
+                }
+            });
+        }
+
+        // Top company highlight banner
+        if (this.binding.includeAnalytics.cardTopPurchaseHighlight != null) {
+            if (!summaryList.isEmpty() && summaryList.get(0).getTotalAmount() > 0) {
+                CompanyPurchaseSummary top = summaryList.get(0);
+                this.binding.includeAnalytics.cardTopPurchaseHighlight.setVisibility(View.VISIBLE);
+                if (this.binding.includeAnalytics.tvTopPurchaseName != null) {
+                    this.binding.includeAnalytics.tvTopPurchaseName.setText("শীর্ষ ক্রয়: " + top.getName());
+                }
+                if (this.binding.includeAnalytics.tvTopPurchaseAmountShare != null) {
+                    this.binding.includeAnalytics.tvTopPurchaseAmountShare.setText("৳" + PdfExporter.formatBengaliNumber(top.getTotalAmount()) + " (" + PdfExporter.toBengaliDigits(String.format(Locale.US, "%.1f", top.getSharePercentage())) + "%)");
+                }
+                this.binding.includeAnalytics.cardTopPurchaseHighlight.setOnClickListener(v -> showCompanyPurchaseHistoryDialog(top));
+            } else {
+                this.binding.includeAnalytics.cardTopPurchaseHighlight.setVisibility(View.GONE);
+            }
+        }
+
+        // Populate dynamic company list below pie chart
+        if (this.binding.includeAnalytics.layoutCompanyPurchaseList != null) {
+            this.binding.includeAnalytics.layoutCompanyPurchaseList.removeAllViews();
+            for (CompanyPurchaseSummary comp : summaryList) {
+                View row = getLayoutInflater().inflate(R.layout.item_company_purchase_row, this.binding.includeAnalytics.layoutCompanyPurchaseList, false);
+                View dot = row.findViewById(R.id.viewRowColorDot);
+                TextView tvName = row.findViewById(R.id.tvRowCompanyName);
+                TextView tvSubtitle = row.findViewById(R.id.tvRowCompanySubtitle);
+                TextView tvAmount = row.findViewById(R.id.tvRowCompanyAmount);
+                TextView tvShare = row.findViewById(R.id.tvRowCompanyShare);
+
+                if (dot != null) {
+                    dot.setBackgroundTintList(ColorStateList.valueOf(comp.getColor()));
+                }
+                if (tvName != null) {
+                    tvName.setText(comp.getName());
+                }
+                if (tvSubtitle != null) {
+                    tvSubtitle.setText(PdfExporter.toBengaliDigits(String.valueOf(comp.getVoucherCount())) + " টি ক্রয় চালান");
+                }
+                if (tvAmount != null) {
+                    tvAmount.setText("৳ " + PdfExporter.formatBengaliNumber(comp.getTotalAmount()));
+                }
+                if (tvShare != null) {
+                    tvShare.setText(PdfExporter.toBengaliDigits(String.format(Locale.US, "%.1f", comp.getSharePercentage())) + "%");
+                }
+
+                row.setOnClickListener(v -> showCompanyPurchaseHistoryDialog(comp));
+                this.binding.includeAnalytics.layoutCompanyPurchaseList.addView(row);
+            }
+        }
+    }
+
+    public void showCompanyPurchaseHistoryDialog(final CompanyPurchaseSummary summary) {
+        if (summary == null || isFinishing() || isDestroyed()) return;
+
+        final com.google.android.material.bottomsheet.BottomSheetDialog dialog =
+                new com.google.android.material.bottomsheet.BottomSheetDialog(this);
+        dialog.setContentView(R.layout.dialog_company_purchase_history);
+
+        View dot = dialog.findViewById(R.id.viewCompanyColorDot);
+        TextView tvName = dialog.findViewById(R.id.tvDialogCompanyName);
+        TextView tvSubtitle = dialog.findViewById(R.id.tvDialogCompanySubtitle);
+        TextView tvTotal = dialog.findViewById(R.id.tvDialogTotalAmount);
+        TextView tvShare = dialog.findViewById(R.id.tvDialogSharePercent);
+        LinearLayout vouchersContainer = dialog.findViewById(R.id.layoutDialogVouchersList);
+        View btnClose = dialog.findViewById(R.id.btnCloseDialog);
+
+        if (dot != null) {
+            dot.setBackgroundTintList(ColorStateList.valueOf(summary.getColor()));
+        }
+        if (tvName != null) {
+            tvName.setText(summary.getName());
+        }
+        if (tvSubtitle != null) {
+            tvSubtitle.setText("ক্রয় ইতিহাস ও বিবরণী (" + PdfExporter.toBengaliDigits(String.valueOf(summary.getVoucherCount())) + "টি চালান)");
+        }
+        if (tvTotal != null) {
+            tvTotal.setText("৳" + PdfExporter.formatBengaliNumber(summary.getTotalAmount()));
+        }
+        if (tvShare != null) {
+            tvShare.setText(PdfExporter.toBengaliDigits(String.format(Locale.US, "%.1f", summary.getSharePercentage())) + "% শেয়ার");
+        }
+
+        if (vouchersContainer != null) {
+            vouchersContainer.removeAllViews();
+            List<CompanyPurchaseSummary.PurchaseVoucher> vouchers = summary.getVouchers();
+            if (vouchers != null && !vouchers.isEmpty()) {
+                for (int i = 0; i < vouchers.size(); i++) {
+                    CompanyPurchaseSummary.PurchaseVoucher v = vouchers.get(i);
+                    View vRow = getLayoutInflater().inflate(R.layout.item_dialog_purchase_voucher, vouchersContainer, false);
+                    TextView tvDateTime = vRow.findViewById(R.id.tvVoucherDateTime);
+                    TextView tvVoucherAmount = vRow.findViewById(R.id.tvVoucherAmount);
+                    TextView tvVoucherType = vRow.findViewById(R.id.tvVoucherType);
+                    TextView tvDealerBadge = vRow.findViewById(R.id.tvVoucherDealerBadge);
+                    TextView tvNote = vRow.findViewById(R.id.tvVoucherNote);
+
+                    if (tvDateTime != null) {
+                        String dt = formatBengaliLongDate(v.getDateFormatted());
+                        if (v.getTimeFormatted() != null && !v.getTimeFormatted().isEmpty()) {
+                            dt += " (" + v.getTimeFormatted() + ")";
+                        }
+                        tvDateTime.setText(dt);
+                    }
+                    if (tvVoucherAmount != null) {
+                        tvVoucherAmount.setText("৳" + PdfExporter.formatBengaliNumber(v.getAmount()));
+                    }
+                    if (tvVoucherType != null) {
+                        tvVoucherType.setText(v.getPurchaseType());
+                    }
+                    if (tvDealerBadge != null) {
+                        tvDealerBadge.setText(v.getDealerTag());
+                    }
+                    if (tvNote != null) {
+                        if (v.getNote() != null && !v.getNote().isEmpty()) {
+                            tvNote.setVisibility(View.VISIBLE);
+                            tvNote.setText("নোট: " + v.getNote());
+                        } else {
+                            tvNote.setVisibility(View.GONE);
+                        }
+                    }
+
+                    vouchersContainer.addView(vRow);
+                }
+            }
+        }
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
     }
 
     private String getBengaliDayFromDateKey(String dateKey) {
@@ -3658,6 +3961,29 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "লোকাল রিস্টোর ব্যর্থ: " + e2.getLocalizedMessage(), Toast.LENGTH_LONG).show();
             }
         }
+        if (requestCode == 1099 && resultCode == RESULT_OK && data != null) {
+            java.util.ArrayList<String> results = data.getStringArrayListExtra(android.speech.RecognizerIntent.EXTRA_RESULTS);
+            if (results != null && !results.isEmpty() && binding != null && binding.etDrawerExpenseName != null) {
+                binding.etDrawerExpenseName.setText(results.get(0));
+                binding.etDrawerExpenseName.setSelection(binding.etDrawerExpenseName.getText().length());
+            }
+        }
+    }
+
+    private void promptVoiceInput() {
+        try {
+            Intent intent = new Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL, android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE, "bn-BD");
+            intent.putExtra(android.speech.RecognizerIntent.EXTRA_PROMPT, "খরচের নাম বা বিবরণ বলুন...");
+            startActivityForResult(intent, 1099);
+        } catch (Exception e) {
+            Toast.makeText(this, "ভয়েস ইনপুট এই ডিভাইসে সমর্থিত নয়", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void initiateUniversalScanner() {
+        Toast.makeText(this, "বারকোড / কিউআর স্ক্যানার সক্রিয় হচ্ছে...", Toast.LENGTH_SHORT).show();
     }
 
     public void planAutoCloudBackup() {
@@ -4160,6 +4486,18 @@ public class MainActivity extends AppCompatActivity {
                 confirmAndPostToAccounting(active, null, null);
             }
         });
+
+        if (this.binding.btnFordiTakeToExpense != null) {
+            this.binding.btnFordiTakeToExpense.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final FordiModel active = getActiveFordi();
+                    if (active != null) {
+                        confirmAndPostToAccounting(active, null, null);
+                    }
+                }
+            });
+        }
 
         updateFordiKhataUI();
     }
@@ -6355,7 +6693,347 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    @Override
+    private void showSideNavigationDrawerDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_side_nav_drawer, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+        }
+
+        // Header elements
+        TextView tvShopName = dialogView.findViewById(R.id.tvDrawerShopName);
+        TextView tvOwnerName = dialogView.findViewById(R.id.tvDrawerOwnerName);
+        TextView tvSabekCash = dialogView.findViewById(R.id.tvDrawerSabekCash);
+        ImageView btnClose = dialogView.findViewById(R.id.btnDrawerClose);
+
+        android.content.SharedPreferences sp = getSharedPreferences("app_settings", MODE_PRIVATE);
+        String shopName = sp.getString("shop_name", "মেসার্স মাওয়া স্টোর");
+        String ownerName = sp.getString("owner_name", "প্রোপ্রাইটার");
+
+        if (tvShopName != null) {
+            tvShopName.setText(shopName);
+        }
+        if (tvOwnerName != null) {
+            tvOwnerName.setText("মালিক: " + ownerName);
+        }
+        if (tvSabekCash != null) {
+            double sabek = (this.viewModel != null && this.viewModel.getSabekCash().getValue() != null)
+                    ? this.viewModel.getSabekCash().getValue().doubleValue() : 0.0d;
+            tvSabekCash.setText("সাবেক ক্যাশ: ৳ " + PdfExporter.formatBengaliNumber(sabek));
+        }
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        // 1. ক্যাশ টালি (Cash Tally)
+        View itemCashTally = dialogView.findViewById(R.id.drawerItemCashTally);
+        if (itemCashTally != null) {
+            itemCashTally.setOnClickListener(v -> {
+                dialog.dismiss();
+                showNoteCountingDialog();
+            });
+        }
+
+        // 2. ক্লাউড অ্যাকাউন্ট (Cloud Account)
+        View itemCloudAccount = dialogView.findViewById(R.id.drawerItemCloudAccount);
+        if (itemCloudAccount != null) {
+            itemCloudAccount.setOnClickListener(v -> {
+                dialog.dismiss();
+                showSupabaseAuthDialog();
+            });
+        }
+
+        // 3. ক্লাউড সিঙ্ক (Cloud Sync)
+        View itemCloudSync = dialogView.findViewById(R.id.drawerItemCloudSync);
+        if (itemCloudSync != null) {
+            itemCloudSync.setOnClickListener(v -> {
+                dialog.dismiss();
+                showCloudSyncQuickDialog();
+            });
+        }
+
+        // 4. ব্যাকআপ ও রিস্টোর (Backup & Restore)
+        View itemBackupRestore = dialogView.findViewById(R.id.drawerItemBackupRestore);
+        if (itemBackupRestore != null) {
+            itemBackupRestore.setOnClickListener(v -> {
+                dialog.dismiss();
+                showExportCenterDialog();
+            });
+        }
+
+        // 5. ব্যক্তিগত খরচ (Personal Expense)
+        View itemPersonalExpense = dialogView.findViewById(R.id.drawerItemPersonalExpense);
+        if (itemPersonalExpense != null) {
+            itemPersonalExpense.setOnClickListener(v -> {
+                dialog.dismiss();
+                ExpenseModel exp = new ExpenseModel();
+                exp.setName("ব্যক্তিগত খরচ");
+                exp.setType(ExpenseModel.TYPE_HOME);
+                showEditExpenseDialog(exp);
+            });
+        }
+
+        // 6. ইউজার মোড (User Mode)
+        View itemUserMode = dialogView.findViewById(R.id.drawerItemUserMode);
+        if (itemUserMode != null) {
+            itemUserMode.setOnClickListener(v -> {
+                dialog.dismiss();
+                showUserModeDialog();
+            });
+        }
+
+        // 7. থিম পরিবর্তন (Theme Change)
+        View itemTheme = dialogView.findViewById(R.id.drawerItemTheme);
+        if (itemTheme != null) {
+            itemTheme.setOnClickListener(v -> {
+                dialog.dismiss();
+                Toast.makeText(MainActivity.this, "🌙 ডার্ক থিম সক্রিয় রয়েছে", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        // 8. দোকানের তথ্য (Store Settings)
+        View itemStoreSettings = dialogView.findViewById(R.id.drawerItemStoreSettings);
+        if (itemStoreSettings != null) {
+            itemStoreSettings.setOnClickListener(v -> {
+                dialog.dismiss();
+                showShopSettingsDialog();
+            });
+        }
+
+        // 9. পণ্য তালিকা ও স্টক (Product Stock Catalog)
+        View itemProductStock = dialogView.findViewById(R.id.drawerItemProductStock);
+        if (itemProductStock != null) {
+            itemProductStock.setOnClickListener(v -> {
+                dialog.dismiss();
+                showProductCatalogDialog();
+            });
+        }
+
+        // 10. সরাসরি মহাজন ক্রয় (Direct Purchase)
+        View itemDirectPurchase = dialogView.findViewById(R.id.drawerItemDirectPurchase);
+        if (itemDirectPurchase != null) {
+            itemDirectPurchase.setOnClickListener(v -> {
+                dialog.dismiss();
+                List<FordiModel> allFordi = StorageManager.getInstance(MainActivity.this).loadFordiRecords();
+                FordiModel active = (!allFordi.isEmpty()) ? allFordi.get(0) : null;
+                showAddFordiItemDialog(active);
+            });
+        }
+
+        // 11. সংসার খরচ (Home Expense)
+        View itemHomeExpense = dialogView.findViewById(R.id.drawerItemHomeExpense);
+        if (itemHomeExpense != null) {
+            itemHomeExpense.setOnClickListener(v -> {
+                dialog.dismiss();
+                ExpenseModel exp = new ExpenseModel();
+                exp.setName("সংসার খরচ");
+                exp.setType(ExpenseModel.TYPE_HOME);
+                showEditExpenseDialog(exp);
+            });
+        }
+
+        // 12. নিয়মাবলি ও গাইডলাইন (Rules & Guidelines)
+        View itemHelpRules = dialogView.findViewById(R.id.drawerItemHelpRules);
+        if (itemHelpRules != null) {
+            itemHelpRules.setOnClickListener(v -> {
+                dialog.dismiss();
+                showAppGuidelinesDialog();
+            });
+        }
+
+        dialog.show();
+    }
+
+    private void showShopSettingsDialog() {
+        android.content.SharedPreferences sp = getSharedPreferences("app_settings", MODE_PRIVATE);
+        String currentShop = sp.getString("shop_name", "মেসার্স মাওয়া স্টোর");
+        String currentOwner = sp.getString("owner_name", "প্রোপ্রাইটার");
+        String currentPhone = sp.getString("shop_phone", "");
+
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(dpToPx(20), dpToPx(16), dpToPx(20), dpToPx(8));
+
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText("দোকানের তথ্য ও সেটিংস");
+        tvTitle.setTextSize(18f);
+        tvTitle.setTypeface(null, Typeface.BOLD);
+        tvTitle.setTextColor(Color.parseColor("#FFFFFF"));
+        tvTitle.setPadding(0, 0, 0, dpToPx(16));
+        container.addView(tvTitle);
+
+        EditText etShop = new EditText(this);
+        etShop.setHint("দোকানের নাম");
+        etShop.setText(currentShop);
+        etShop.setTextColor(Color.WHITE);
+        etShop.setHintTextColor(Color.parseColor("#71717A"));
+        etShop.setBackgroundResource(R.drawable.bg_calc_key_dark);
+        etShop.setPadding(dpToPx(12), dpToPx(10), dpToPx(12), dpToPx(10));
+        container.addView(etShop);
+
+        View sp1 = new View(this);
+        sp1.setLayoutParams(new LinearLayout.LayoutParams(1, dpToPx(10)));
+        container.addView(sp1);
+
+        EditText etOwner = new EditText(this);
+        etOwner.setHint("প্রোপ্রাইটার / স্বত্বাধিকারীর নাম");
+        etOwner.setText(currentOwner);
+        etOwner.setTextColor(Color.WHITE);
+        etOwner.setHintTextColor(Color.parseColor("#71717A"));
+        etOwner.setBackgroundResource(R.drawable.bg_calc_key_dark);
+        etOwner.setPadding(dpToPx(12), dpToPx(10), dpToPx(12), dpToPx(10));
+        container.addView(etOwner);
+
+        View sp2 = new View(this);
+        sp2.setLayoutParams(new LinearLayout.LayoutParams(1, dpToPx(10)));
+        container.addView(sp2);
+
+        EditText etPhone = new EditText(this);
+        etPhone.setHint("মোবাইল নম্বর");
+        etPhone.setText(currentPhone);
+        etPhone.setTextColor(Color.WHITE);
+        etPhone.setHintTextColor(Color.parseColor("#71717A"));
+        etPhone.setBackgroundResource(R.drawable.bg_calc_key_dark);
+        etPhone.setPadding(dpToPx(12), dpToPx(10), dpToPx(12), dpToPx(10));
+        container.addView(etPhone);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(container)
+                .setPositiveButton("সংরক্ষণ", (d, w) -> {
+                    String s = etShop.getText().toString().trim();
+                    String o = etOwner.getText().toString().trim();
+                    String p = etPhone.getText().toString().trim();
+                    sp.edit().putString("shop_name", s).putString("owner_name", o).putString("shop_phone", p).apply();
+                    Toast.makeText(this, "দোকানের তথ্য সংরক্ষিত হয়েছে", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("বাতিল", null)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_dialog_dark_container);
+        }
+        dialog.show();
+    }
+
+    private void showUserModeDialog() {
+        String[] modes = {"১. ব্যবসা ও দোকান মোড (সব ফিচার)", "২. ব্যক্তিগত হিসাব মোড", "৩. যৌথ ও সংসার মোড"};
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("অ্যাপ ব্যবহারের মোড নির্বাচন করুন")
+                .setItems(modes, (d, which) -> {
+                    Toast.makeText(this, "মোড সক্রিয় করা হয়েছে: " + modes[which], Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("বন্ধ", null)
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_dialog_dark_container);
+        }
+        dialog.show();
+    }
+
+    private void showProductCatalogDialog() {
+        List<FordiModel> allFordi = StorageManager.getInstance(this).loadFordiRecords();
+        List<FordiItemModel> catalogItems = new ArrayList<>();
+        for (FordiModel f : allFordi) {
+            for (FordiItemModel item : f.getItems()) {
+                if (item.getProductName() != null && !item.getProductName().trim().isEmpty()) {
+                    boolean exists = false;
+                    for (FordiItemModel existing : catalogItems) {
+                        if (existing.getProductName().trim().equalsIgnoreCase(item.getProductName().trim())) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        catalogItems.add(item);
+                    }
+                }
+            }
+        }
+
+        if (catalogItems.isEmpty()) {
+            Toast.makeText(this, "পণ্য তালিকায় এখনও কোনো পণ্য যোগ করা হয়নি", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(dpToPx(18), dpToPx(16), dpToPx(18), dpToPx(16));
+
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText("পণ্য তালিকা ও দর (" + toBengaliDigits(String.valueOf(catalogItems.size())) + "টি)");
+        tvTitle.setTextSize(17f);
+        tvTitle.setTypeface(null, Typeface.BOLD);
+        tvTitle.setTextColor(Color.parseColor("#C4B5FD"));
+        tvTitle.setPadding(0, 0, 0, dpToPx(12));
+        container.addView(tvTitle);
+
+        ScrollView scroll = new ScrollView(this);
+        LinearLayout listLayout = new LinearLayout(this);
+        listLayout.setOrientation(LinearLayout.VERTICAL);
+
+        for (FordiItemModel p : catalogItems) {
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding(dpToPx(8), dpToPx(10), dpToPx(8), dpToPx(10));
+            row.setBackgroundResource(R.drawable.bg_calc_key_dark);
+            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, -2);
+            rowParams.setMargins(0, 0, 0, dpToPx(6));
+            row.setLayoutParams(rowParams);
+
+            TextView tvPName = new TextView(this);
+            tvPName.setLayoutParams(new LinearLayout.LayoutParams(0, -2, 1.0f));
+            String unitLabel = ProductModel.getBengaliUnitLabel(p.getUnit());
+            tvPName.setText(p.getProductName() + (unitLabel.isEmpty() ? "" : " (" + unitLabel + ")"));
+            tvPName.setTextColor(Color.WHITE);
+            tvPName.setTextSize(14f);
+            tvPName.setTypeface(null, Typeface.BOLD);
+            row.addView(tvPName);
+
+            TextView tvRates = new TextView(this);
+            tvRates.setText("ক্রয়: ৳" + PdfExporter.formatBengaliNumber(p.getPurchaseRate()) + " | বিক্রয়: ৳" + PdfExporter.formatBengaliNumber(p.getSellingRate()));
+            tvRates.setTextColor(Color.parseColor("#38BDF8"));
+            tvRates.setTextSize(12f);
+            row.addView(tvRates);
+
+            listLayout.addView(row);
+        }
+        scroll.addView(listLayout);
+        container.addView(scroll);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(container)
+                .setPositiveButton("বন্ধ", null)
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_dialog_dark_container);
+        }
+        dialog.show();
+    }
+
+    private void showAppGuidelinesDialog() {
+        String guidelines = "📘 হিসাবের মূল নিয়মাবলি:\n\n"
+                + "১. সাবেক ক্যাশ: গতকাল দোকান বন্ধ করার সময় ক্যাশ বাক্সে যা ছিল।\n"
+                + "২. নগদ বিক্রয়: আজকের সারাদিনের মোট নগদ বেচাকেনা।\n"
+                + "৩. বাকি আদায়: পূর্বের বাকি থেকে কাস্টমাররা আজ যা পরিশোধ করেছেন।\n"
+                + "৪. অন্যান্য জমা: দোকান বাদে অন্য কোনো মাধ্যম থেকে আসা টাকা।\n\n"
+                + "মোট নগদ জমা = সাবেক ক্যাশ + নগদ বিক্রয় + বাকি আদায় + অন্যান্য জমা\n\n"
+                + "৫. খরচের হিসাব: সারাদিনের খরচ, মহাজন পেমেন্ট ও পণ্য ক্রয়।\n\n"
+                + "আজকের ক্যাশ ক্লোজিং = মোট নগদ জমা - মোট খরচ।";
+
+        new AlertDialog.Builder(this)
+                .setTitle("হিসাব মেলানোর নিয়মাবলি")
+                .setMessage(guidelines)
+                .setPositiveButton("বুঝেছি", null)
+                .show();
+    }
+
     protected void onResume() {
         super.onResume();
         updateCloudBackupUI();

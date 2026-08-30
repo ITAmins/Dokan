@@ -18,69 +18,68 @@
             android:layout_height="0dp"
             android:visibility="gone" />
 
-        <!-- Clean Top Header -->
+        <!-- Redesigned Dark Top Header (Matches Screenshot 3) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#FFFFFF"
-            android:paddingStart="8dp"
-            android:paddingEnd="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp">
+            android:background="#15161E"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
 
-            <!-- Top Row: Logo & Brand + Actions -->
+            <!-- Top Row: MAWA · মাওয়া ডিজিটাল খাতা & Action Buttons -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:id="@+id/layoutBrandHeader"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:layout_alignParentStart="true"
-                    android:layout_toStartOf="@+id/layoutHeaderActions"
+                    android:layout_toStartOf="@+id/btnHeaderCalculator"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="6dp">
-
-                    <ImageView
-                        android:id="@+id/ivHeaderWalletLogo"
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
-                        android:src="@drawable/img_mawa_logo"
-                        android:contentDescription="MAWA" />
+                    android:layout_marginEnd="8dp">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginStart="6dp">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="মাওয়া ক্যাশ খাতা"
-                            android:textColor="#0F172A"
-                            android:textSize="16.5sp"
-                            android:singleLine="true"
-                            android:ellipsize="end"
+                            android:text="MAWA"
+                            android:textColor="#C4B5FD"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="স্মার্ট হিসাব ও ফর্দ"
-                            android:textColor="#64748B"
+                            android:text=" · মাওয়া ডিজিটাল খাতা"
+                            android:textColor="#FFFFFF"
+                            android:textSize="16.5sp"
                             android:singleLine="true"
                             android:ellipsize="end"
-                            android:textSize="11sp" />
+                            android:textStyle="bold" />
                     </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="শুভ দুপুর · দোকান খতিয়ান"
+                        android:textColor="#94A3B8"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textSize="12.5sp" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/layoutHeaderActions"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -88,102 +87,68 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true">
 
-                    <!-- Cloud Sync Header Indicator -->
+                    <!-- Invisible compatibility views -->
                     <LinearLayout
                         android:id="@+id/btnHeaderCloudSync"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:background="@drawable/shape_capsule_white"
-                        android:backgroundTint="#F8FAFC"
-                        android:gravity="center_vertical"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:paddingHorizontal="8dp"
-                        android:layout_marginEnd="6dp">
-
-                        <ImageView
-                            android:id="@+id/ivHeaderSyncIcon"
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:src="@drawable/ic_cloud"
-                            android:contentDescription="ক্লাউড স্ট্যাটাস"
-                            app:tint="#64748B" />
-
-                        <TextView
-                            android:id="@+id/tvHeaderSyncText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="অফলাইন"
-                            android:textColor="#64748B"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="gone">
+                        <ImageView android:id="@+id/ivHeaderSyncIcon" android:layout_width="0dp" android:layout_height="0dp" />
+                        <TextView android:id="@+id/tvHeaderSyncText" android:layout_width="0dp" android:layout_height="0dp" />
                     </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/btnMenu"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="?selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:padding="7dp"
-                        android:src="@drawable/ic_menu"
-                        android:contentDescription="মেনু"
-                        app:tint="#475569"
-                        android:layout_marginEnd="4dp" />
 
                     <FrameLayout
                         android:id="@+id/btnNotifications"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="?selectableItemBackgroundBorderless"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="gone" />
+
+                    <FrameLayout
+                        android:id="@+id/btnUserProfileHeader"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="gone">
+                        <ImageView android:id="@+id/ivUserProfileHeaderIcon" android:layout_width="0dp" android:layout_height="0dp" />
+                        <TextView android:id="@+id/tvUserProfileHeaderName" android:layout_width="0dp" android:layout_height="0dp" />
+                    </FrameLayout>
+
+                    <!-- Circular Calculator Button (Purple) -->
+                    <FrameLayout
+                        android:id="@+id/btnHeaderCalculator"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/bg_dark_header_calc_circle"
                         android:clickable="true"
                         android:focusable="true"
-                        android:layout_marginEnd="6dp">
+                        android:foreground="?selectableItemBackgroundBorderless">
 
                         <ImageView
                             android:layout_width="22dp"
                             android:layout_height="22dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_bell"
-                            android:contentDescription="নোটিফিকেশন"
-                            app:tint="#475569" />
-
-                        <View
-                            android:layout_width="7dp"
-                            android:layout_height="7dp"
-                            android:layout_gravity="end|top"
-                            android:layout_marginTop="6dp"
-                            android:layout_marginEnd="6dp"
-                            android:background="@drawable/shape_circle"
-                            android:backgroundTint="#EF4444" />
+                            android:src="@drawable/ic_calculator"
+                            app:tint="#FFFFFF"
+                            android:contentDescription="ক্যালকুলেটর" />
                     </FrameLayout>
 
+                    <!-- Circular Menu Button (Dark Slate) -->
                     <FrameLayout
-                        android:id="@+id/btnUserProfileHeader"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/shape_circle"
-                        android:backgroundTint="#F1F5F9"
+                        android:id="@+id/btnMenu"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/bg_dark_header_action_circle"
                         android:clickable="true"
-                        android:focusable="true">
+                        android:focusable="true"
+                        android:foreground="?selectableItemBackgroundBorderless">
 
                         <ImageView
-                            android:id="@+id/ivUserProfileHeaderIcon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_user"
-                            android:contentDescription="প্রোফাইল"
-                            app:tint="#2563EB" />
-
-                        <TextView
-                            android:id="@+id/tvUserProfileHeaderName"
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:visibility="gone"
-                            android:text="প্রোফাইল" />
+                            android:src="@drawable/ic_menu"
+                            app:tint="#FFFFFF"
+                            android:contentDescription="মেনু" />
                     </FrameLayout>
                 </LinearLayout>
             </RelativeLayout>
@@ -450,12 +415,6 @@
                                 android:layout_height="0dp"
                                 android:visibility="gone"
                                 android:text="মাওয়া স্টোর" />
-                            <TextView
-                                android:id="@+id/tvHeroTitle"
-                                android:layout_width="0dp"
-                                android:layout_height="0dp"
-                                android:visibility="gone"
-                                android:text="আজকের হিসাব" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -1571,7 +1530,6 @@
                                     android:textStyle="bold" />
 
                                 <TextView
-                                    android:id="@+id/tvSaleFormulaHint"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="হাতে ক্যাশ + মোট খরচ - সাবেক"
@@ -1872,7 +1830,7 @@
                     android:paddingBottom="28dp"
                     android:visibility="gone">
 
-                    <!-- TOP HEADER: Title + Subtitle & Menu Icon (Screenshot) -->
+                    <!-- TOP HEADER: Title + Subtitle & Scanner Icon (Matches Screenshot 1) -->
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -1899,25 +1857,33 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="মোট ফর্দ: ৳ ০ | টিক করা: ৳ ০"
+                                android:text="মোট ফর্দ: ০ | টিক করা: ০"
                                 android:textColor="#9E9AA7"
                                 android:textSize="12.5sp" />
                         </LinearLayout>
 
-                        <ImageView
-                            android:id="@+id/btnFordiOptionsMenu"
+                        <com.google.android.material.card.MaterialCardView
                             android:layout_width="38dp"
                             android:layout_height="38dp"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
-                            android:background="?selectableItemBackgroundBorderless"
-                            android:contentDescription="মেন্যু"
-                            android:padding="7dp"
-                            android:src="@drawable/ic_menu"
-                            app:tint="#FFFFFF" />
+                            app:cardBackgroundColor="#2A2438"
+                            app:cardCornerRadius="19dp"
+                            app:cardElevation="0dp">
+
+                            <ImageView
+                                android:id="@+id/btnFordiOptionsMenu"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="?selectableItemBackgroundBorderless"
+                                android:contentDescription="স্ক্যানার"
+                                android:padding="9dp"
+                                android:src="@drawable/ic_qr_code"
+                                app:tint="#A78BFA" />
+                        </com.google.android.material.card.MaterialCardView>
                     </RelativeLayout>
 
-                    <!-- SUB-TABS: [📋 বর্তমান ফর্দ (৪)] [🕒 আগে করা সব ফর্দ (০)] -->
+                    <!-- SUB-TABS: [📋 বর্তমান ফর্দ (১)] [🕒 আগে করা সব ফর্দ (১৮)] -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -1992,7 +1958,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <!-- ACTION BAR: ≡+ নতুন ফর্দ | মোড সুইচ | + পণ্য যোগ -->
+                        <!-- ACTION BAR: ≡+ নতুন ফর্দ | টিক সরান | 🔺 পণ্য তালিকা -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -2025,12 +1991,12 @@
                                 android:id="@+id/btnFordiActionToggleAll"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
+                                android:layout_marginStart="6dp"
                                 android:background="?selectableItemBackground"
                                 android:clickable="true"
                                 android:focusable="true"
                                 android:padding="6dp"
-                                android:text="সব টিক"
+                                android:text="টিক সরান"
                                 android:textColor="#D4D4D8"
                                 android:textSize="12.5sp" />
 
@@ -2039,7 +2005,7 @@
                                 android:layout_height="1dp"
                                 android:layout_weight="1" />
 
-                            <!-- Mode Toggle Button (সিম্পল / টেবিল) -->
+                            <!-- Product Catalog Pill: 🔺 পণ্য তালিকা -->
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnFordiToggleMode"
                                 style="@style/Widget.Material3.Button.TonalButton"
@@ -2048,15 +2014,15 @@
                                 android:layout_marginEnd="6dp"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
-                                android:paddingHorizontal="10dp"
-                                android:text="✨ সিম্পল"
+                                android:paddingHorizontal="12dp"
+                                android:text="🔺 পণ্য তালিকা"
                                 android:textColor="#DDD6FE"
                                 android:textSize="11.5sp"
                                 android:textStyle="bold"
                                 app:backgroundTint="#3B2D54"
                                 app:cornerRadius="18dp" />
 
-                            <!-- Purple Pill Button: + পণ্য যোগ -->
+                            <!-- Purple Pill Button: + পণ্য -->
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnQuickAddFordiItem"
                                 android:layout_width="wrap_content"
@@ -2072,7 +2038,7 @@
                                 app:cornerRadius="18dp" />
                         </LinearLayout>
 
-                        <!-- CLEAN CARD-LESS "+ আরেকটি পণ্য" PROMPT (Screenshot style) -->
+                        <!-- CLEAN CARD-LESS "+ আরেকটি পণ্য" PROMPT -->
                         <LinearLayout
                             android:id="@+id/layoutCardlessAddItem"
                             android:layout_width="match_parent"
@@ -2084,7 +2050,8 @@
                             android:foreground="?selectableItemBackground"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingHorizontal="16dp">
+                            android:paddingHorizontal="16dp"
+                            android:visibility="gone">
 
                             <ImageView
                                 android:layout_width="20dp"
@@ -2102,9 +2069,8 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
-                        <!-- QUICK ACTIONS ROW: [ 🖼️ ফর্দ ছবি ] [ ✈️ শেয়ার ] [ ⬇️ CSV ] (Screenshot) -->
+                        <!-- QUICK ACTIONS ROW: [ 🖼️ ফর্দ ছবি ] [ ✈️ শেয়ার ] [ ⬇️ CSV ] -->
                         <LinearLayout
-                            android:id="@+id/layoutFordiExportBar"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="14dp"
@@ -2207,6 +2173,75 @@
                             </LinearLayout>
                         </LinearLayout>
 
+                        <!-- CHECKED ITEMS GREEN CARD BANNER (Matches Screenshot 1) -->
+                        <LinearLayout
+                            android:id="@+id/layoutFordiCheckedBanner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="14dp"
+                            android:background="@drawable/bg_fordi_green_banner"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="14dp"
+                            android:paddingVertical="12dp">
+
+                            <ImageView
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+                                android:layout_marginEnd="10dp"
+                                android:src="@drawable/ic_check_circle_fill"
+                                app:tint="#34D399" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvFordiCheckedCount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="টিক কৃত পণ্য (১টি)"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="1dp"
+                                    android:text="ক্লিক করে খরচ লিস্টে পাঠান"
+                                    android:textColor="#A7F3D0"
+                                    android:textSize="11.5sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvFordiCheckedGrandTotal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="10dp"
+                                android:text="৳ ০"
+                                android:textColor="#6EE7B7"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnFordiTakeToExpense"
+                                style="@style/Widget.Material3.Button.TonalButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="36dp"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:paddingHorizontal="10dp"
+                                android:text="খরচে নিন ➔"
+                                android:textColor="#064E3B"
+                                android:textSize="11.5sp"
+                                android:textStyle="bold"
+                                app:backgroundTint="#6EE7B7"
+                                app:cornerRadius="10dp" />
+                        </LinearLayout>
+
                         <!-- TABLE COLUMN HEADER: টিক | পণ্য | পরিমাণ | ক্রয় → বেচা | মোট -->
                         <LinearLayout
                             android:id="@+id/layoutFordiTableHeader"
@@ -2257,7 +2292,7 @@
                                 android:layout_weight="1.2"
                                 android:ellipsize="end"
                                 android:singleLine="true"
-                                android:text="ক্রয় → বেচা"
+                                android:text="ক্রয় -> বেচা"
                                 android:textColor="#71717A"
                                 android:textSize="12sp"
                                 android:textStyle="bold" />
@@ -2319,7 +2354,7 @@
                                 android:layout_marginTop="4dp"
                                 android:layout_marginBottom="16dp"
                                 android:gravity="center"
-                                android:text="উপরে '+ পণ্য যোগ' বাটনে চাপ দিয়ে দ্রুত পণ্য ও দর লিখুন।"
+                                android:text="উপরে '+ পণ্য' বাটনে চাপ দিয়ে দ্রুত পণ্য ও দর লিখুন।"
                                 android:textColor="#9E9AA7"
                                 android:textSize="12.5sp" />
 
@@ -2335,7 +2370,7 @@
                                 app:cornerRadius="21dp" />
                         </LinearLayout>
 
-                        <!-- BOTTOM SUMMARY CARD (Screenshot) -->
+                        <!-- BOTTOM SUMMARY CARD (Matches Screenshot 1) -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -2365,9 +2400,38 @@
                                     android:id="@+id/tvFordiTableGrandTotal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="৳ ০"
+                                    android:text="০"
                                     android:textColor="#FFFFFF"
-                                    android:textSize="19sp"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <!-- টিক কৃত পণ্যের মোট row -->
+                            <LinearLayout
+                                android:id="@+id/layoutFordiCheckedSummaryRow"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvFordiCheckedSummaryLabel"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="টিক কৃত পণ্যের মোট (১টি):"
+                                    android:textColor="#34D399"
+                                    android:textSize="13.5sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvFordiCheckedSummaryTotal"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="০"
+                                    android:textColor="#34D399"
+                                    android:textSize="16sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
 
@@ -2382,17 +2446,17 @@
                                 android:textStyle="bold"
                                 android:visibility="gone" />
 
-                            <!-- Post To Accounting Button -->
+                            <!-- Big Green Button: 🛒 টিক করা পণ্য খরচ লিস্টে পাঠান (৮০) -->
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnFordiPostToAccounting"
                                 android:layout_width="match_parent"
-                                android:layout_height="48dp"
-                                android:layout_marginTop="12dp"
-                                android:text="হিসাবে যোগ করুন"
-                                android:textColor="#065F46"
-                                android:textSize="13.5sp"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="14dp"
+                                android:text="🛒 টিক করা পণ্য খরচ লিস্টে পাঠান"
+                                android:textColor="#022C22"
+                                android:textSize="14sp"
                                 android:textStyle="bold"
-                                app:backgroundTint="#CCFBF1"
+                                app:backgroundTint="#10B981"
                                 app:cornerRadius="14dp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -2450,24 +2514,9 @@
                             android:orientation="vertical" />
                     </LinearLayout>
 
-                    <!-- Compatibility hidden views -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:visibility="gone">
-                        <TextView android:id="@+id/tvTotalFordiBudget" android:layout_width="0dp" android:layout_height="0dp" />
-                        <TextView android:id="@+id/tvTotalFordiCount" android:layout_width="0dp" android:layout_height="0dp" />
-                        <LinearLayout android:id="@+id/layoutFordiCheckedBanner" android:layout_width="0dp" android:layout_height="0dp" />
-                        <TextView android:id="@+id/tvFordiCheckedCount" android:layout_width="0dp" android:layout_height="0dp" />
-                        <TextView android:id="@+id/tvFordiCheckedGrandTotal" android:layout_width="0dp" android:layout_height="0dp" />
-                        <TextView android:id="@+id/btnFordiBannerPostExpense" android:layout_width="0dp" android:layout_height="0dp" />
-                        <AutoCompleteTextView android:id="@+id/etFordiInlineProductName" android:layout_width="0dp" android:layout_height="0dp" />
-                        <Spinner android:id="@+id/spFordiInlineUnit" android:layout_width="0dp" android:layout_height="0dp" />
-                        <EditText android:id="@+id/etFordiInlineQty" android:layout_width="0dp" android:layout_height="0dp" />
-                        <EditText android:id="@+id/etFordiInlineBuyRate" android:layout_width="0dp" android:layout_height="0dp" />
-                        <EditText android:id="@+id/etFordiInlineSellRate" android:layout_width="0dp" android:layout_height="0dp" />
-                        <Button android:id="@+id/btnFordiInlineAdd" android:layout_width="0dp" android:layout_height="0dp" />
-                    </LinearLayout>
+                    <!-- Hidden compat view -->
+                    <TextView android:id="@+id/tvTotalFordiBudget" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+                    <TextView android:id="@+id/tvTotalFordiCount" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
                 </LinearLayout>
 
                 <!-- ============================================== -->
@@ -2492,6 +2541,70 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:visibility="gone">
+
+                    <!-- Modern Header / Compose Launcher Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardOpenComposeDashboard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1.2dp"
+                        app:strokeColor="#BFDBFE"
+                        app:cardBackgroundColor="#EFF6FF">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="12dp"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:src="@drawable/ic_notebook"
+                                app:tint="#2563EB"
+                                android:padding="6dp"
+                                android:contentDescription="Notebook Icon" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:layout_marginStart="10dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="রিপোর্ট ও লাভ-ক্ষতি"
+                                    android:textColor="#1E3A8A"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvReportHeaderSubtitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="এই মাস-এর পূর্ণাঙ্গ বিবরণী"
+                                    android:textColor="#3B82F6"
+                                    android:textSize="11.5sp" />
+                            </LinearLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnOpenComposeDashboard"
+                                style="@style/Widget.Material3.Button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="36dp"
+                                android:text="খুলুন"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                app:cornerRadius="10dp"
+                                app:backgroundTint="#2563EB" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <!-- Time Filters -->
                     <HorizontalScrollView
@@ -2549,6 +2662,11 @@
                                 app:cornerRadius="19dp" />
                         </LinearLayout>
                     </HorizontalScrollView>
+
+                    <!-- Analytics Section: Trend Line & Pie Chart (Screenshot 2) -->
+                    <include
+                        android:id="@+id/includeAnalytics"
+                        layout="@layout/layout_dashboard_analytics" />
 
                     <!-- Summary Metrics Card -->
                     <com.google.android.material.card.MaterialCardView
@@ -2755,72 +2873,6 @@
                                 android:layout_width="0dp"
                                 android:layout_height="0dp"
                                 android:visibility="gone" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Pie Chart View (খরচ ক্যাটাগরি বিশ্লেষণ) -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        app:cardBackgroundColor="#FFFFFF"
-                        app:cardCornerRadius="18dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="#E2E8F0"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="খরচের খাত ও বিভাজন"
-                                android:textColor="#0F172A"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:layout_marginBottom="8dp" />
-
-                            <com.example.PieChartView
-                                android:id="@+id/pieChartView"
-                                android:layout_width="match_parent"
-                                android:layout_height="220dp" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Line Graph View (দৈনিক ট্রেন্ড) -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        app:cardBackgroundColor="#FFFFFF"
-                        app:cardCornerRadius="18dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="#E2E8F0"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="বিক্রি বনাম খরচ ট্রেন্ড"
-                                android:textColor="#0F172A"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:layout_marginBottom="8dp" />
-
-                            <com.example.LineGraphView
-                                android:id="@+id/lineGraphView"
-                                android:layout_width="match_parent"
-                                android:layout_height="200dp" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -3163,7 +3215,6 @@
                                     app:singleSelection="true">
 
                                     <com.google.android.material.chip.Chip
-                                        android:id="@+id/chipCatBazar"
                                         style="@style/Widget.Material3.Chip.Filter"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -3455,7 +3506,6 @@
                                         android:textStyle="bold" />
 
                                     <TextView
-                                        android:id="@+id/tvSupabaseSyncStatusText"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="ক্লাউড ব্যাকআপের জন্য লগইন করুন"
@@ -3464,7 +3514,6 @@
                                 </LinearLayout>
 
                                 <TextView
-                                    android:id="@+id/tvSupabaseSyncBadge"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:background="@drawable/shape_capsule_white"
@@ -3478,7 +3527,6 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:id="@+id/layoutUserInfoCard"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/shape_hero_card_background"
@@ -3853,7 +3901,6 @@
 
     <!-- Clean Modern Bottom Navigation Bar with Circular Floating Expense Button -->
     <LinearLayout
-        android:id="@+id/layoutBottomNavContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -3906,18 +3953,19 @@
                 android:text="বাড়ি" />
         </com.google.android.material.tabs.TabLayout>
 
+        <!-- Redesigned Bottom Navigation Bar (Matches Screenshot 4) -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="58dp"
+            android:layout_height="62dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:baselineAligned="false"
-            android:paddingHorizontal="2dp"
-            android:background="#FFFFFF">
+            android:paddingHorizontal="4dp"
+            android:background="#161720">
 
-            <!-- 1. হোম -->
+            <!-- 1. হোম (Selected Tab) -->
             <LinearLayout
                 android:id="@+id/navItemHome"
                 android:layout_width="0dp"
@@ -3926,54 +3974,60 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:clickable="true"
-                android:focusable="true"
-                android:background="?selectableItemBackgroundBorderless">
+                android:focusable="true">
 
-                <ImageView
-                    android:id="@+id/ivNavHome"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_nav_home"
-                    app:tint="#2563EB" />
+                <FrameLayout
+                    android:id="@+id/layoutNavHomePill"
+                    android:layout_width="38dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/bg_nav_active_pill">
+
+                    <ImageView
+                        android:id="@+id/ivNavHome"
+                        android:layout_width="19dp"
+                        android:layout_height="19dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_shop"
+                        app:tint="#C4B5FD" />
+                </FrameLayout>
 
                 <TextView
                     android:id="@+id/tvNavHome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="হোম"
-                    android:textColor="#2563EB"
-                    android:textSize="11sp"
+                    android:textColor="#C4B5FD"
+                    android:textSize="10.5sp"
                     android:textStyle="bold"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
 
-            <!-- 2. রিপোর্ট -->
+            <!-- 2. ফর্দ -->
             <LinearLayout
-                android:id="@+id/navItemReport"
+                android:id="@+id/navItemFordi"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:clickable="true"
-                android:focusable="true"
-                android:background="?selectableItemBackgroundBorderless">
+                android:focusable="true">
 
                 <ImageView
-                    android:id="@+id/ivNavReport"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_nav_report"
-                    app:tint="#64748B" />
+                    android:id="@+id/ivNavFordi"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_nav_fordi"
+                    app:tint="#94A3B8" />
 
                 <TextView
-                    android:id="@+id/tvNavReport"
+                    android:id="@+id/tvNavFordi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="রিপোর্ট"
-                    android:textColor="#64748B"
-                    android:textSize="11sp"
-                    android:layout_marginTop="2dp" />
+                    android:text="ফর্দ"
+                    android:textColor="#94A3B8"
+                    android:textSize="10.5sp"
+                    android:layout_marginTop="3dp" />
             </LinearLayout>
 
             <!-- 3. বাকি -->
@@ -3985,27 +4039,26 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:clickable="true"
-                android:focusable="true"
-                android:background="?selectableItemBackgroundBorderless">
+                android:focusable="true">
 
                 <ImageView
                     android:id="@+id/ivNavBaki"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/ic_nav_baki"
-                    app:tint="#64748B" />
+                    app:tint="#94A3B8" />
 
                 <TextView
                     android:id="@+id/tvNavBaki"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="বাকি"
-                    android:textColor="#64748B"
-                    android:textSize="11sp"
-                    android:layout_marginTop="2dp" />
+                    android:textColor="#94A3B8"
+                    android:textSize="10.5sp"
+                    android:layout_marginTop="3dp" />
             </LinearLayout>
 
-            <!-- 4. গোল ভাসমান ফ্লোটিং খরচ বাটন (+ চিহ্ন দিয়ে) -->
+            <!-- 4. গোল ভাসমান ফ্লোটিং খরচ বাটন (+ চিহ্ন ও পার্পল রিং সহ) -->
             <LinearLayout
                 android:id="@+id/btnNavCenterExpense"
                 android:layout_width="0dp"
@@ -4016,23 +4069,21 @@
                 android:clipToPadding="false"
                 android:orientation="vertical"
                 android:clickable="true"
-                android:focusable="true"
-                android:background="?selectableItemBackgroundBorderless">
+                android:focusable="true">
 
                 <FrameLayout
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
                     android:layout_marginTop="-16dp"
-                    android:background="@drawable/shape_circle"
-                    android:backgroundTint="#EF4444"
-                    android:elevation="6dp">
+                    android:background="@drawable/bg_dark_purple_fab"
+                    android:elevation="8dp">
 
                     <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_plus"
-                        app:tint="#FFFFFF"
+                        app:tint="#C4B5FD"
                         android:contentDescription="+ খরচ" />
                 </FrameLayout>
 
@@ -4040,68 +4091,96 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="খরচ"
-                    android:textColor="#EF4444"
-                    android:textSize="10.5sp"
+                    android:textColor="#C4B5FD"
+                    android:textSize="11sp"
                     android:textStyle="bold"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
 
-            <!-- 5. ফর্দ -->
+            <!-- 5. ব্যক্তিগত -->
             <LinearLayout
-                android:id="@+id/navItemFordi"
+                android:id="@+id/navItemPersonal"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="1.1"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:clickable="true"
-                android:focusable="true"
-                android:background="?selectableItemBackgroundBorderless">
+                android:focusable="true">
 
                 <ImageView
-                    android:id="@+id/ivNavFordi"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_nav_fordi"
-                    app:tint="#64748B" />
+                    android:id="@+id/ivNavPersonal"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_wallet_pocket"
+                    app:tint="#94A3B8" />
 
                 <TextView
-                    android:id="@+id/tvNavFordi"
+                    android:id="@+id/tvNavPersonal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ফর্দ"
-                    android:textColor="#64748B"
-                    android:textSize="11sp"
-                    android:layout_marginTop="2dp" />
+                    android:text="ব্যক্তিগত"
+                    android:textColor="#94A3B8"
+                    android:textSize="10sp"
+                    android:singleLine="true"
+                    android:layout_marginTop="3dp" />
             </LinearLayout>
 
-            <!-- 6. বাড়ি (সংসার ও পারিবারিক খরচ) -->
+            <!-- 6. বাড়ির হিসাব -->
             <LinearLayout
                 android:id="@+id/navItemHomeExpense"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="1.2"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:clickable="true"
-                android:focusable="true"
-                android:background="?selectableItemBackgroundBorderless">
+                android:focusable="true">
 
                 <ImageView
                     android:id="@+id/ivNavHomeExpense"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/ic_home_expense"
-                    app:tint="#64748B" />
+                    app:tint="#94A3B8" />
 
                 <TextView
                     android:id="@+id/tvNavHomeExpense"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="বাড়ি"
-                    android:textColor="#64748B"
-                    android:textSize="11sp"
-                    android:layout_marginTop="2dp" />
+                    android:text="বাড়ির হিসাব"
+                    android:textColor="#94A3B8"
+                    android:textSize="9.5sp"
+                    android:singleLine="true"
+                    android:layout_marginTop="3dp" />
+            </LinearLayout>
+
+            <!-- 7. রিপোর্ট -->
+            <LinearLayout
+                android:id="@+id/navItemReport"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/ivNavReport"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_nav_report"
+                    app:tint="#94A3B8" />
+
+                <TextView
+                    android:id="@+id/tvNavReport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="রিপোর্ট"
+                    android:textColor="#94A3B8"
+                    android:textSize="10.5sp"
+                    android:layout_marginTop="3dp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -4118,6 +4197,7 @@
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold"
+        android:visibility="gone"
         app:icon="@drawable/ic_calculator"
         app:iconTint="#FFFFFF"
         app:backgroundTint="#2563EB"
@@ -4128,12 +4208,12 @@
         android:id="@+id/layoutExpenseDrawerOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#66000000"
+        android:background="#80000000"
         android:clickable="true"
         android:focusable="true"
         android:visibility="gone" />
 
-    <!-- COMPACT SLIDE-UP SOFT BOTTOM DRAWER -->
+    <!-- REDESIGNED DARK EXPENSE & PURCHASE DRAWER (Matches Screenshot 1) -->
     <LinearLayout
         android:id="@+id/layoutExpenseDrawer"
         android:layout_width="match_parent"
@@ -4144,12 +4224,82 @@
         android:elevation="32dp"
         android:focusable="true"
         android:orientation="vertical"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="20dp"
+        android:paddingHorizontal="18dp"
+        android:paddingTop="16dp"
         android:paddingBottom="24dp"
         android:visibility="gone">
 
-        <!-- Top Header: খরচ ও ক্রয় যোগ করুন       ✓ সংরক্ষিত       ✕ -->
+        <!-- Top Previous Expense Preview Banner (if available) -->
+        <LinearLayout
+            android:id="@+id/layoutDrawerRecentExpensePreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="12dp"
+            android:visibility="visible">
+
+            <FrameLayout
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_expense_preview_badge">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_shop"
+                    app:tint="#F87171" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvDrawerPreviewTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="দোকানের খরচ: মেরিস"
+                    android:textColor="#E2E8F0"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDrawerPreviewSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="২৮ আগস্ট, ১২:২৬ সকাল/দুপুর"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvDrawerPreviewAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-৳৬২০"
+                android:textColor="#F87171"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="10dp" />
+
+            <ImageView
+                android:id="@+id/btnDrawerDeleteRecent"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:padding="4dp"
+                android:src="@drawable/ic_trash"
+                app:tint="#64748B"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="মুছুন" />
+        </LinearLayout>
+
+        <!-- Modal Header: খরচ ও ক্রয় যোগ করুন  [QR]  [🎙️ মুখে বলুন]  [✕] -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -4163,28 +4313,63 @@
                 android:layout_weight="1"
                 android:text="খরচ ও ক্রয় যোগ করুন"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textSize="18.5sp"
                 android:textStyle="bold" />
 
-            <!-- Inline Success Confirmation Badge (সংরক্ষিত) -->
+            <!-- Hidden compatibility view -->
             <TextView
                 android:id="@+id/tvDrawerSuccessBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/bg_profit_capsule"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="3dp"
-                android:text="সংরক্ষিত"
-                android:textColor="#34D399"
-                android:textSize="12sp"
-                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:visibility="gone" />
 
+            <!-- QR Scanner Icon Button -->
+            <ImageView
+                android:id="@+id/btnDrawerScanQr"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_qr_code"
+                app:tint="#CBD5E1"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="QR স্ক্যান" />
+
+            <!-- Voice Input Button (🎙️ মুখে বলুন) -->
+            <LinearLayout
+                android:id="@+id/btnDrawerVoiceInput"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_voice_input_pill"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="10dp"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_mic"
+                    app:tint="#C4B5FD" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="মুখে বলুন"
+                    android:textColor="#C4B5FD"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Close Button -->
             <ImageView
                 android:id="@+id/btnDrawerClose"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:background="?selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:contentDescription="বন্ধ করুন"
@@ -4197,7 +4382,7 @@
         <!-- 1. BIG AMOUNT INPUT CARD (৳ কত টাকা?) -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="54dp"
+            android:layout_height="56dp"
             android:background="@drawable/bg_dark_input_box"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -4207,10 +4392,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="৳"
-                android:textColor="#818CF8"
-                android:textSize="22sp"
+                android:textColor="#C4B5FD"
+                android:textSize="24sp"
                 android:textStyle="bold"
-                android:layout_marginEnd="10dp" />
+                android:layout_marginEnd="12dp" />
 
             <EditText
                 android:id="@+id/etDrawerExpenseAmount"
@@ -4222,7 +4407,7 @@
                 android:inputType="numberDecimal"
                 android:textColor="#FFFFFF"
                 android:textColorHint="#64748B"
-                android:textSize="19sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -4314,81 +4499,139 @@
             android:layout_marginTop="8dp"
             android:orientation="horizontal">
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/btnDrawerTypeShop"
                 android:layout_width="0dp"
-                android:layout_height="38dp"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:background="@drawable/bg_dark_chip_selected_red"
+                android:background="@drawable/bg_dark_category_store_selected"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="দোকান খরচ"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
 
-            <TextView
+                <ImageView
+                    android:id="@+id/ivDrawerTypeShop"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_shop"
+                    app:tint="#FFFFFF"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:id="@+id/tvDrawerTypeShop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="দোকান খরচ"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnDrawerTypeHome"
                 android:layout_width="0dp"
-                android:layout_height="38dp"
-                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:layout_weight="1.1"
                 android:layout_marginHorizontal="3dp"
                 android:background="@drawable/bg_dark_chip_unselected"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="সংসার / বাড়ি"
-                android:textColor="#94A3B8"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
 
-            <TextView
+                <ImageView
+                    android:id="@+id/ivDrawerTypeHome"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_home_expense"
+                    app:tint="#94A3B8"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:id="@+id/tvDrawerTypeHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="সংসার / বাড়ি"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnDrawerTypeProductBuy"
                 android:layout_width="0dp"
-                android:layout_height="38dp"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
                 android:background="@drawable/bg_dark_chip_unselected"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="পণ্য ক্রয়"
-                android:textColor="#94A3B8"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/ivDrawerTypeProductBuy"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_cart"
+                    app:tint="#94A3B8"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:id="@+id/tvDrawerTypeProductBuy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="পণ্য ক্রয়"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- 4. DESCRIPTION INPUT CARD -->
+        <!-- 4. PURPOSE / BARCODE INPUT CARD -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="52dp"
             android:layout_marginTop="14dp"
             android:background="@drawable/bg_dark_input_box"
             android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:paddingHorizontal="14dp">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/etDrawerExpenseName"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:background="@null"
                 android:completionThreshold="1"
-                android:hint="কী জন্য? (বিবরণ / পণ্যের নাম)"
+                android:hint="কী জন্য? (বিবরণ / পণ্যের নাম বা বারকোড)"
                 android:imeOptions="actionDone"
                 android:inputType="textCapWords"
                 android:textColor="#FFFFFF"
                 android:textColorHint="#64748B"
-                android:textSize="14sp"
+                android:textSize="13.5sp"
                 app:simpleItemLayout="@android:layout/simple_dropdown_item_1line" />
+
+            <ImageView
+                android:id="@+id/btnDrawerBarcodeScan"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:padding="3dp"
+                android:src="@drawable/ic_barcode_scan"
+                app:tint="#94A3B8"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="বারকোড স্ক্যান" />
         </LinearLayout>
 
         <!-- 5. DATE SECTION -->
         <LinearLayout
             android:id="@+id/layoutDrawerDatePicker"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="50dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/bg_dark_input_box"
             android:clickable="true"
@@ -4399,10 +4642,10 @@
             android:paddingHorizontal="12dp">
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:src="@drawable/ic_calendar"
-                app:tint="#818CF8" />
+                app:tint="#A78BFA" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -4422,22 +4665,22 @@
                     android:id="@+id/tvDrawerDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="আজ"
+                    android:text="আজ (30 August, 2026)"
                     android:textColor="#FFFFFF"
-                    android:textSize="12.5sp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/btnDrawerChangeDate"
                 android:layout_width="wrap_content"
-                android:layout_height="28dp"
+                android:layout_height="30dp"
                 android:background="@drawable/bg_dark_chip_unselected"
                 android:gravity="center"
-                android:paddingHorizontal="10dp"
+                android:paddingHorizontal="12dp"
                 android:text="তারিখ বদলান"
                 android:textColor="#CBD5E1"
-                android:textSize="11sp"
+                android:textSize="11.5sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -4487,7 +4730,7 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:paddingHorizontal="12dp"
-                android:text="অন্য তারিখ..."
+                android:text="📅 অন্য তারিখ..."
                 android:textColor="#94A3B8"
                 android:textSize="11.5sp"
                 android:textStyle="bold" />

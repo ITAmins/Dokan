@@ -154,6 +154,20 @@ public class MainViewModel extends AndroidViewModel {
         updateActiveDateState();
     }
 
+    public void setActiveDate(String dateStr) {
+        if (dateStr != null && !dateStr.isEmpty()) {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+                Date parsed = dateFormat.parse(dateStr);
+                if (parsed != null) {
+                    this.activeCalendar.setTime(parsed);
+                    updateActiveDateState();
+                }
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     private void updateActiveDateState() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
         this.activeDateString.setValue(dateFormat.format(this.activeCalendar.getTime()));

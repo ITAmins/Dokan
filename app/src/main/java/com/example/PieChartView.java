@@ -9,31 +9,25 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/* loaded from: classes5.dex */
 public class PieChartView extends View {
-    private final Map<String, Integer> categoryColors;
-    private final Paint paintArc;
-    private final Paint paintBg;
-    private final Paint paintBorder;
-    private final Paint paintCenter;
-    private final Paint paintGlow;
-    private final Paint paintText;
-    private final RectF rectF;
-    private int selectedSliceIndex;
-    private final List<PieSlice> slices;
 
-    /* loaded from: classes5.dex */
+    public interface OnSliceClickListener {
+        void onSliceClicked(PieSlice slice, int index);
+    }
+
     public static class PieSlice {
-        public int color;
         public String name;
+        public double value;
+        public int color;
         public float startAngle;
         public float sweepAngle;
-        public double value;
+        public double percentage;
+        public int count;
 
         public PieSlice(String name, double value, int color) {
             this.name = name;
@@ -42,322 +36,284 @@ public class PieChartView extends View {
         }
     }
 
+    private final List<PieSlice> slices = new ArrayList<>();
+    private final RectF rectF = new RectF();
+    private int selectedSliceIndex = -1;
+    private double grandTotal = 0.0d;
+    private OnSliceClickListener onSliceClickListener;
+
+    private final Paint paintArc = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintCenter = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintSubText = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintGlow = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    private static final int[] PALETTE = new int[]{
+            Color.parseColor("#F59E0B"), // Amber/Orange
+            Color.parseColor("#3B82F6"), // Blue
+            Color.parseColor("#10B981"), // Emerald
+            Color.parseColor("#8B5CF6"), // Purple
+            Color.parseColor("#EC4899"), // Pink
+            Color.parseColor("#06B6D4"), // Cyan
+            Color.parseColor("#F97316"), // Orange
+            Color.parseColor("#6366F1"), // Indigo
+            Color.parseColor("#14B8A6"), // Teal
+            Color.parseColor("#64748B")  // Slate
+    };
+
     public PieChartView(Context context) {
         super(context);
-        this.paintArc = new Paint(1);
-        this.paintCenter = new Paint(1);
-        this.paintText = new Paint(1);
-        this.paintBg = new Paint(1);
-        this.paintBorder = new Paint(1);
-        this.paintGlow = new Paint(1);
-        this.rectF = new RectF();
-        this.slices = new ArrayList();
-        this.categoryColors = new HashMap();
-        this.selectedSliceIndex = -1;
         init();
     }
 
     public PieChartView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.paintArc = new Paint(1);
-        this.paintCenter = new Paint(1);
-        this.paintText = new Paint(1);
-        this.paintBg = new Paint(1);
-        this.paintBorder = new Paint(1);
-        this.paintGlow = new Paint(1);
-        this.rectF = new RectF();
-        this.slices = new ArrayList();
-        this.categoryColors = new HashMap();
-        this.selectedSliceIndex = -1;
         init();
     }
 
     public PieChartView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.paintArc = new Paint(1);
-        this.paintCenter = new Paint(1);
-        this.paintText = new Paint(1);
-        this.paintBg = new Paint(1);
-        this.paintBorder = new Paint(1);
-        this.paintGlow = new Paint(1);
-        this.rectF = new RectF();
-        this.slices = new ArrayList();
-        this.categoryColors = new HashMap();
-        this.selectedSliceIndex = -1;
         init();
     }
 
     private void init() {
-        this.categoryColors.put("বাজার", Integer.valueOf(Color.parseColor("#2563EB")));
-        this.categoryColors.put("ভাড়া", Integer.valueOf(Color.parseColor("#0D9488")));
-        this.categoryColors.put("পরিবহন", Integer.valueOf(Color.parseColor("#7C3AED")));
-        this.categoryColors.put("ওষুধ", Integer.valueOf(Color.parseColor("#EA580C")));
-        this.categoryColors.put("ব্যাংক", Integer.valueOf(Color.parseColor("#059669")));
-        this.categoryColors.put("কাঁচামাল", Integer.valueOf(Color.parseColor("#D97706")));
-        this.categoryColors.put("অন্যান্য", Integer.valueOf(Color.parseColor("#64748B")));
-        this.paintCenter.setColor(Color.parseColor("#FFFFFF"));
-        this.paintText.setFakeBoldText(true);
-        this.paintText.setTextAlign(Paint.Align.CENTER);
-        this.paintBg.setColor(Color.parseColor("#FFFFFF"));
-        this.paintBg.setStyle(Paint.Style.FILL);
-        this.paintBorder.setColor(Color.parseColor("#E2E8F0"));
-        this.paintBorder.setStrokeWidth(2.0f);
-        this.paintBorder.setStyle(Paint.Style.STROKE);
-        this.paintGlow.setStyle(Paint.Style.STROKE);
-        this.paintGlow.setStrokeWidth(6.0f);
+        paintCenter.setColor(Color.WHITE);
+        paintCenter.setStyle(Paint.Style.FILL);
+
+        paintText.setFakeBoldText(true);
+        paintText.setTextAlign(Paint.Align.CENTER);
+
+        paintSubText.setTextAlign(Paint.Align.CENTER);
+        paintSubText.setColor(Color.parseColor("#64748B"));
+
+        paintGlow.setStyle(Paint.Style.STROKE);
+        paintGlow.setStrokeWidth(dpToPx(4.0f));
     }
 
-    public void setExpenses(List<ExpenseModel> expenses) {
-        int color;
-        String matchedCat;
+    public void setOnSliceClickListener(OnSliceClickListener listener) {
+        this.onSliceClickListener = listener;
+    }
+
+    public List<PieSlice> getSlices() {
+        return slices;
+    }
+
+    public void setCompanyPurchases(List<CompanyPurchaseSummary> summaries) {
         this.slices.clear();
         this.selectedSliceIndex = -1;
-        Map<String, Double> totals = new HashMap<>();
-        for (String cat : this.categoryColors.keySet()) {
-            totals.put(cat, Double.valueOf(0.0d));
-        }
-        for (ExpenseModel exp : expenses) {
-            String name = exp.getName().trim();
-            String nameLower = name.toLowerCase();
-            if (nameLower.contains("বাজার") || nameLower.contains("চাল") || nameLower.contains("আটা") || nameLower.contains("ডাল") || nameLower.contains("তেল")) {
-                matchedCat = "বাজার";
-            } else if (nameLower.contains("ভাড়া") || nameLower.contains("ভড়া") || nameLower.contains("মেস") || nameLower.contains("দোকান") || nameLower.contains("বাড়ি")) {
-                matchedCat = "ভাড়া";
-            } else if (nameLower.contains("পরিবহন") || nameLower.contains("বাস") || nameLower.contains("রিকশা") || nameLower.contains("ভ্যান") || nameLower.contains("যাতায়াত") || nameLower.contains("গাড়ি")) {
-                matchedCat = "পরিবহন";
-            } else if (nameLower.contains("ওষুধ") || nameLower.contains("ঔষধ") || nameLower.contains("ডাক্তার") || nameLower.contains("মেডিকেল") || nameLower.contains("হাসপাতাল")) {
-                matchedCat = "ওষুধ";
-            } else if (nameLower.contains("ব্যাংক") || nameLower.contains("রকেট") || nameLower.contains("বিকাশ") || nameLower.contains("নগদ") || nameLower.contains("সার্ভিস") || nameLower.contains("ট্যাক্স")) {
-                matchedCat = "ব্যাংক";
-            } else if (nameLower.contains("কাঁচামাল") || nameLower.contains("সবজি") || nameLower.contains("ফল") || nameLower.contains("মাছ") || nameLower.contains("মাংস") || nameLower.contains("ডিম")) {
-                matchedCat = "কাঁচামাল";
-            } else {
-                matchedCat = name;
+        this.grandTotal = 0.0d;
+
+        if (summaries != null) {
+            for (CompanyPurchaseSummary s : summaries) {
+                this.grandTotal += s.getTotalAmount();
             }
-            if (!totals.containsKey(matchedCat)) {
-                totals.put(matchedCat, Double.valueOf(0.0d));
-            }
-            totals.put(matchedCat, Double.valueOf(totals.get(matchedCat).doubleValue() + exp.getAmount()));
         }
-        double grandTotal = 0.0d;
-        Iterator<Double> it = totals.values().iterator();
-        while (it.hasNext()) {
-            double val = it.next().doubleValue();
-            grandTotal += val;
-        }
-        if (grandTotal > 0.0d) {
+
+        if (this.grandTotal > 0.0d && summaries != null) {
             float currentAngle = -90.0f;
-            for (Map.Entry<String, Double> entry : totals.entrySet()) {
-                if (entry.getValue().doubleValue() > 0.0d) {
-                    float sweep = (float) ((entry.getValue().doubleValue() / grandTotal) * 360.0d);
-                    if (this.categoryColors.containsKey(entry.getKey())) {
-                        color = this.categoryColors.get(entry.getKey()).intValue();
-                    } else {
-                        color = generateColorForName(entry.getKey());
-                    }
-                    PieSlice slice = new PieSlice(entry.getKey(), entry.getValue().doubleValue(), color);
-                    slice.startAngle = currentAngle;
-                    slice.sweepAngle = sweep;
-                    this.slices.add(slice);
-                    currentAngle += sweep;
-                }
+            for (int i = 0; i < summaries.size(); i++) {
+                CompanyPurchaseSummary cs = summaries.get(i);
+                float sweep = (float) ((cs.getTotalAmount() / grandTotal) * 360.0d);
+                if (sweep < 0.5f) sweep = 0.5f;
+
+                PieSlice slice = new PieSlice(cs.getName(), cs.getTotalAmount(), cs.getColor());
+                slice.startAngle = currentAngle;
+                slice.sweepAngle = sweep;
+                slice.percentage = cs.getSharePercentage();
+                slice.count = cs.getVoucherCount();
+                this.slices.add(slice);
+
+                currentAngle += sweep;
             }
         }
         invalidate();
     }
 
-    @Override // android.view.View
+    public void setExpenses(List<ExpenseModel> expenses) {
+        this.slices.clear();
+        this.selectedSliceIndex = -1;
+        this.grandTotal = 0.0d;
+
+        if (expenses == null || expenses.isEmpty()) {
+            invalidate();
+            return;
+        }
+
+        Map<String, Double> totals = new HashMap<>();
+        Map<String, Integer> counts = new HashMap<>();
+
+        for (ExpenseModel exp : expenses) {
+            String name = exp.getName() != null ? exp.getName().trim() : "অন্যান্য";
+            if (name.isEmpty()) name = "অন্যান্য";
+            double amt = exp.getAmount();
+
+            totals.put(name, totals.getOrDefault(name, 0.0d) + amt);
+            counts.put(name, counts.getOrDefault(name, 0) + 1);
+            grandTotal += amt;
+        }
+
+        if (grandTotal > 0.0d) {
+            // Sort by amount descending
+            List<Map.Entry<String, Double>> list = new ArrayList<>(totals.entrySet());
+            Collections.sort(list, (a, b) -> Double.compare(b.getValue(), a.getValue()));
+
+            float currentAngle = -90.0f;
+            int colorIdx = 0;
+            for (Map.Entry<String, Double> entry : list) {
+                float sweep = (float) ((entry.getValue() / grandTotal) * 360.0d);
+                int color = PALETTE[colorIdx % PALETTE.length];
+                colorIdx++;
+
+                PieSlice slice = new PieSlice(entry.getKey(), entry.getValue(), color);
+                slice.startAngle = currentAngle;
+                slice.sweepAngle = sweep;
+                slice.percentage = (entry.getValue() / grandTotal) * 100.0d;
+                slice.count = counts.getOrDefault(entry.getKey(), 1);
+                this.slices.add(slice);
+
+                currentAngle += sweep;
+            }
+        }
+        invalidate();
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (this.slices.isEmpty()) {
             return super.onTouchEvent(event);
         }
-        if (event.getAction() == 0 || event.getAction() == 2) {
+
+        if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_DOWN) {
             float tx = event.getX();
             float ty = event.getY();
             float centerX = getWidth() / 2.0f;
             float centerY = getHeight() / 2.0f;
-            double distance = Math.sqrt(Math.pow(tx - centerX, 2.0d) + Math.pow(ty - centerY, 2.0d));
+
+            double dist = Math.sqrt(Math.pow(tx - centerX, 2) + Math.pow(ty - centerY, 2));
             int size = Math.min(getWidth(), getHeight());
-            int radius = (size / 2) - 40;
-            if (distance <= radius && distance >= radius * 0.25f) {
-                double angle = Math.toDegrees(Math.atan2(ty - centerY, tx - centerX));
-                double d = 360.0d;
-                if (angle < 0.0d) {
-                    angle += 360.0d;
-                }
-                int oldIndex = this.selectedSliceIndex;
-                this.selectedSliceIndex = -1;
-                int i = 0;
-                while (true) {
-                    if (i >= this.slices.size()) {
-                        break;
-                    }
-                    PieSlice slice = this.slices.get(i);
-                    double d2 = d;
-                    float start = slice.startAngle;
-                    while (start < 0.0f) {
-                        start += 360.0f;
-                    }
-                    float f = slice.sweepAngle + start;
-                    float tx2 = tx;
-                    float ty2 = ty;
-                    double relAngle = angle - start;
-                    while (relAngle < 0.0d) {
-                        relAngle += d2;
-                    }
-                    if (relAngle > slice.sweepAngle) {
-                        i++;
-                        d = d2;
-                        tx = tx2;
-                        ty = ty2;
+            int radius = (size / 2) - dpToPx(16f);
+            int innerRadius = (int) (radius * 0.58f);
+
+            if (dist <= radius && dist >= innerRadius * 0.5f) {
+                double touchAngle = Math.toDegrees(Math.atan2(ty - centerY, tx - centerX));
+                if (touchAngle < 0) touchAngle += 360.0;
+
+                for (int i = 0; i < slices.size(); i++) {
+                    PieSlice s = slices.get(i);
+                    float start = s.startAngle;
+                    while (start < 0) start += 360f;
+                    start = start % 360f;
+                    float end = (start + s.sweepAngle);
+
+                    boolean inside = false;
+                    if (end <= 360f) {
+                        inside = touchAngle >= start && touchAngle <= end;
                     } else {
+                        inside = touchAngle >= start || touchAngle <= (end % 360f);
+                    }
+
+                    if (inside) {
                         this.selectedSliceIndex = i;
-                        break;
+                        invalidate();
+                        if (event.getAction() == MotionEvent.ACTION_UP && onSliceClickListener != null) {
+                            onSliceClickListener.onSliceClicked(s, i);
+                        }
+                        return true;
                     }
                 }
-                if (this.selectedSliceIndex != oldIndex) {
-                    performClick();
-                    invalidate();
-                    return true;
-                }
-                return true;
             }
         }
         return super.onTouchEvent(event);
     }
 
-    @Override // android.view.View
-    public boolean performClick() {
-        return super.performClick();
-    }
-
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
-        float f;
-        int i;
-        Canvas canvas2 = canvas;
         super.onDraw(canvas);
         int width = getWidth();
         int height = getHeight();
-        if (width == 0 || height == 0) {
-            return;
-        }
-        RectF outerBg = new RectF(4.0f, 4.0f, width - 4, height - 4);
-        canvas2.drawRoundRect(outerBg, dpToPx(16), dpToPx(16), this.paintBg);
-        this.paintBorder.setColor(Color.parseColor("#E2E8F0"));
-        canvas2.drawRoundRect(outerBg, dpToPx(16), dpToPx(16), this.paintBorder);
+        if (width <= 0 || height <= 0) return;
+
+        float centerX = width / 2.0f;
+        float centerY = height / 2.0f;
         int size = Math.min(width, height);
-        int radius = (size / 2) - 40;
-        float f2 = 2.0f;
-        this.rectF.set((width / 2.0f) - radius, (height / 2.0f) - radius, (width / 2.0f) + radius, (height / 2.0f) + radius);
-        boolean isEmpty = this.slices.isEmpty();
-        Paint paint = this.paintArc;
-        if (isEmpty) {
-            paint.setColor(Color.parseColor("#F8FAFC"));
-            this.paintArc.setStyle(Paint.Style.FILL);
-            canvas2.drawCircle(width / 2.0f, height / 2.0f, radius, this.paintArc);
-            this.paintBorder.setColor(Color.parseColor("#E2E8F0"));
-            canvas2.drawCircle(width / 2.0f, height / 2.0f, radius, this.paintBorder);
-            this.paintText.setTextSize(radius * 0.13f);
-            this.paintText.setColor(Color.parseColor("#94A3B8"));
-            canvas2.drawText("কোনো রেকর্ড নেই", width / 2.0f, (height / 2.0f) + 6.0f, this.paintText);
+        int radius = (size / 2) - dpToPx(16f);
+        int innerRadius = (int) (radius * 0.58f);
+
+        if (slices.isEmpty() || grandTotal <= 0) {
+            // Draw empty placeholder ring
+            paintArc.setStyle(Paint.Style.STROKE);
+            paintArc.setStrokeWidth(dpToPx(24f));
+            paintArc.setColor(Color.parseColor("#E2E8F0"));
+            canvas.drawCircle(centerX, centerY, (radius + innerRadius) / 2.0f, paintArc);
+
+            paintText.setColor(Color.parseColor("#94A3B8"));
+            paintText.setTextSize(dpToPx(13.0f));
+            canvas.drawText("ক্রয়ের তথ্য নেই", centerX, centerY + dpToPx(4.0f), paintText);
             return;
         }
-        paint.setStyle(Paint.Style.FILL);
-        int i2 = 0;
-        while (i2 < this.slices.size()) {
-            PieSlice slice = this.slices.get(i2);
-            this.paintArc.setColor(slice.color);
-            if (i2 == this.selectedSliceIndex) {
-                canvas2.save();
-                float midAngleStr = slice.startAngle + (slice.sweepAngle / f2);
-                double rad = Math.toRadians(midAngleStr);
-                f = f2;
-                i = i2;
-                float dx = (float) (18.0f * Math.cos(rad));
-                float dy = (float) (18.0f * Math.sin(rad));
-                canvas2.translate(dx, dy);
-                this.paintGlow.setColor(slice.color);
-                this.paintGlow.setAlpha(60);
-                RectF rectF = this.rectF;
-                float dy2 = slice.startAngle;
-                canvas2.drawArc(rectF, dy2, slice.sweepAngle, true, this.paintGlow);
-                this.paintArc.setAlpha(255);
-                canvas2 = canvas;
-                canvas2.drawArc(this.rectF, slice.startAngle, slice.sweepAngle, true, this.paintArc);
-                canvas.restore();
-            } else {
-                f = f2;
-                i = i2;
-                this.paintArc.setAlpha(this.selectedSliceIndex >= 0 ? 120 : 255);
-                canvas2 = canvas;
-                canvas2.drawArc(this.rectF, slice.startAngle, slice.sweepAngle, true, this.paintArc);
-            }
-            i2 = i + 1;
-            f2 = f;
-        }
-        float f3 = f2;
-        this.paintCenter.setColor(Color.parseColor("#FFFFFF"));
-        canvas2.drawCircle(width / f3, height / f3, radius * 0.58f, this.paintCenter);
-        this.paintBorder.setColor(Color.parseColor("#E2E8F0"));
-        canvas2.drawCircle(width / f3, height / f3, radius * 0.58f, this.paintBorder);
-        float f4 = 0.14f;
-        float f5 = 0.11f;
-        if (this.selectedSliceIndex >= 0 && this.selectedSliceIndex < this.slices.size()) {
-            PieSlice sel = this.slices.get(this.selectedSliceIndex);
-            this.paintText.setTextSize(radius * 0.11f);
-            this.paintText.setColor(Color.parseColor("#2563EB"));
-            canvas2.drawText(sel.name, width / f3, (height / f3) - (radius * 0.14f), this.paintText);
-            this.paintText.setTextSize(radius * 0.2f);
-            this.paintText.setColor(Color.parseColor("#0F172A"));
-            canvas2.drawText("৳" + formatCompact(sel.value), width / f3, (height / f3) + (radius * 0.08f), this.paintText);
-            this.paintText.setTextSize(radius * 0.08f);
-            this.paintText.setColor(Color.parseColor("#64748B"));
-            double total = 0.0d;
-            for (PieSlice s : this.slices) {
-                total += s.value;
-            }
-            String percentage = String.format("%.1f%%", Double.valueOf((sel.value / total) * 100.0d));
-            canvas2.drawText(percentage, width / f3, (height / f3) + (radius * 0.25f), this.paintText);
-            return;
-        }
-        double totalExpense = 0.0d;
-        for (PieSlice s2 : this.slices) {
-            totalExpense += s2.value;
-            f5 = f5;
-            f4 = f4;
-        }
-        this.paintText.setTextSize(radius * f5);
-        this.paintText.setColor(Color.parseColor("#64748B"));
-        canvas2.drawText("মোট খরচ", width / f3, (height / f3) - (radius * 0.1f), this.paintText);
-        this.paintText.setTextSize(radius * 0.18f);
-        this.paintText.setColor(Color.parseColor("#0F172A"));
-        canvas2.drawText("৳" + formatCompact(totalExpense), width / f3, (height / f3) + (radius * f4), this.paintText);
-        this.paintText.setTextSize(radius * 0.075f);
-        this.paintText.setColor(Color.parseColor("#94A3B8"));
-        canvas2.drawText("খাতে চাপ দিয়ে দেখুন", width / f3, (height / f3) + (radius * 0.32f), this.paintText);
-    }
 
-    private int generateColorForName(String name) {
-        if (name == null || name.isEmpty()) {
-            return Color.parseColor("#8F9CAE");
-        }
-        int hash = name.hashCode();
-        float hue = Math.abs(hash % 360);
-        return Color.HSVToColor(new float[]{hue, 0.85f, 0.55f});
-    }
+        // Draw Slices
+        for (int i = 0; i < slices.size(); i++) {
+            PieSlice slice = slices.get(i);
+            boolean isSelected = (i == selectedSliceIndex);
 
-    private int dpToPx(int dp) {
-        return (int) (dp * getResources().getDisplayMetrics().density);
+            float currentRadius = isSelected ? radius + dpToPx(6.0f) : radius;
+            rectF.set(centerX - currentRadius, centerY - currentRadius, centerX + currentRadius, centerY + currentRadius);
+
+            paintArc.setStyle(Paint.Style.FILL);
+            paintArc.setColor(slice.color);
+            canvas.drawArc(rectF, slice.startAngle, slice.sweepAngle, true, paintArc);
+
+            if (isSelected) {
+                paintGlow.setColor(Color.WHITE);
+                canvas.drawArc(rectF, slice.startAngle, slice.sweepAngle, true, paintGlow);
+            }
+        }
+
+        // Draw Center Circle (Donut Hole)
+        canvas.drawCircle(centerX, centerY, innerRadius, paintCenter);
+
+        // Center Summary Text
+        if (selectedSliceIndex >= 0 && selectedSliceIndex < slices.size()) {
+            PieSlice sel = slices.get(selectedSliceIndex);
+            paintSubText.setTextSize(dpToPx(10.0f));
+            paintSubText.setColor(Color.parseColor("#64748B"));
+            String selName = sel.name.length() > 8 ? sel.name.substring(0, 7) + ".." : sel.name;
+            canvas.drawText(selName, centerX, centerY - dpToPx(10.0f), paintSubText);
+
+            paintText.setColor(sel.color);
+            paintText.setTextSize(dpToPx(13.5f));
+            canvas.drawText(formatCompact(sel.value), centerX, centerY + dpToPx(6.0f), paintText);
+
+            paintSubText.setTextSize(dpToPx(9.5f));
+            paintSubText.setColor(Color.parseColor("#0F172A"));
+            canvas.drawText(String.format(java.util.Locale.US, "%.1f%% শেয়ার", sel.percentage), centerX, centerY + dpToPx(18.0f), paintSubText);
+        } else {
+            paintSubText.setTextSize(dpToPx(10.0f));
+            paintSubText.setColor(Color.parseColor("#64748B"));
+            canvas.drawText("মোট ক্রয়", centerX, centerY - dpToPx(8.0f), paintSubText);
+
+            paintText.setColor(Color.parseColor("#0F172A"));
+            paintText.setTextSize(dpToPx(14.0f));
+            canvas.drawText("৳" + formatCompact(grandTotal), centerX, centerY + dpToPx(8.0f), paintText);
+
+            paintSubText.setTextSize(dpToPx(9.0f));
+            paintSubText.setColor(Color.parseColor("#94A3B8"));
+            canvas.drawText(slices.size() + "টি খাত", centerX, centerY + dpToPx(20.0f), paintSubText);
+        }
     }
 
     private String formatCompact(double val) {
-        if (val < 1000.0d) {
-            return String.format("%.0f", Double.valueOf(val));
+        if (Math.abs(val) < 1000.0d) {
+            return String.format(java.util.Locale.US, "%.0f", val);
         }
-        if (val < 100000.0d) {
-            return String.format("%.1fK", Double.valueOf(val / 1000.0d));
+        if (Math.abs(val) < 100000.0d) {
+            return String.format(java.util.Locale.US, "%.1fk", val / 1000.0d);
         }
-        return String.format("%.1fL", Double.valueOf(val / 100000.0d));
+        return String.format(java.util.Locale.US, "%.1fL", val / 100000.0d);
+    }
+
+    private int dpToPx(float dp) {
+        return (int) (getResources().getDisplayMetrics().density * dp);
     }
 }

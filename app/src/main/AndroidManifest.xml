@@ -30,6 +30,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.example.ui.dashboard.ComposeDashboardActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:exported="false"

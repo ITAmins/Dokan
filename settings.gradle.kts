@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "দৈনিক ক্যাশ হিসাব"
+rootProject.name = "মাওয়া ক্যাশ খাতা"
 
 include(":app")

@@ -3,32 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_dark_container"
     android:orientation="vertical"
-    android:background="#FFFFFF"
     android:padding="18dp">
 
-    <!-- Header -->
+    <!-- Header: Purple square icon, Title, Subtitle, Close Button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_marginBottom="12dp">
+        android:layout_marginBottom="14dp">
 
-        <FrameLayout
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/shape_circle"
-            android:backgroundTint="#EFF6FF"
-            android:layout_marginEnd="10dp">
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginEnd="10dp"
+            app:cardBackgroundColor="#7C3AED"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp">
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_calculator"
-                app:tint="#2563EB" />
-        </FrameLayout>
+                app:tint="#FFFFFF" />
+        </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -40,16 +41,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="স্মার্ট খুচরা ক্যালকুলেটর"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
+                android:textColor="#FFFFFF"
+                android:textSize="16.5sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="হিসাব করে সরাসরি বিক্রি, বাকি বা খরচে যোগ করুন"
-                android:textColor="#64748B"
-                android:textSize="11sp" />
+                android:layout_marginTop="1dp"
+                android:text="হিসাব করে এক ক্লিকে খাতা ও খরচে এন্ট্রি"
+                android:textColor="#94A3B8"
+                android:textSize="11.5sp" />
         </LinearLayout>
 
         <ImageView
@@ -64,49 +66,53 @@
             app:tint="#94A3B8" />
     </LinearLayout>
 
-    <!-- Mode Selector Tabs: [ সাধারণ মোড ] | [ দর × পরিমাণ ] -->
+    <!-- Mode Selector Tabs: [ সাধারণ যোগ-গুণ ] | [ দর ও একক হিসাব ] -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabCalcMode"
         android:layout_width="match_parent"
-        android:layout_height="38dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/bg_filter_toggle_container"
-        app:tabBackground="@drawable/bg_filter_tab_unselected"
+        android:layout_height="40dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_calc_pill_dark"
+        app:tabBackground="@null"
         app:tabIndicator="@drawable/bg_filter_tab_selected"
         app:tabIndicatorColor="@null"
         app:tabIndicatorFullWidth="true"
-        app:tabIndicatorGravity="stretch"
+        app:tabIndicatorGravity="bottom"
+        app:tabIndicatorHeight="3dp"
         app:tabMode="fixed"
         app:tabRippleColor="@null"
-        app:tabSelectedTextColor="#2563EB"
-        app:tabTextColor="#64748B">
+        app:tabSelectedTextColor="#FFFFFF"
+        app:tabTextColor="#94A3B8">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="সাধারণ ক্যালকুলেটর" />
+            android:text="সাধারণ যোগ-গুণ" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="দর × পরিমাণ (কেজি/গ্রাম)" />
+            android:text="দর ও একক হিসাব" />
     </com.google.android.material.tabs.TabLayout>
 
-    <!-- Result Display Card -->
+    <!-- Result Display Screen -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        app:cardBackgroundColor="#0F172A"
-        app:cardCornerRadius="14dp"
-        app:cardElevation="0dp">
+        android:layout_marginBottom="14dp"
+        app:cardBackgroundColor="#0D1B2A"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#1E293B"
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
             android:orientation="vertical"
-            android:padding="14dp">
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp">
 
             <TextView
                 android:id="@+id/tvCalcExpression"
@@ -125,12 +131,104 @@
                 android:layout_marginTop="2dp"
                 android:text="৳ ০"
                 android:textColor="#38BDF8"
-                android:textSize="26sp"
+                android:textSize="28sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- 1. STANDARD CALCULATOR VIEW -->
+    <!-- DIRECT POSTING ACTIONS SECTION (হিসাবকৃত টাকা সরাসরি এন্ট্রি করুন:) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="হিসাবকৃত টাকা সরাসরি এন্ট্রি করুন:"
+        android:textColor="#CBD5E1"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <!-- 4 Direct Posting Buttons in Horizontal Row -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="14dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- নগদ বিক্রি -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPostToCashSale"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginEnd="6dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="💵 নগদ বিক্রি"
+                android:textColor="#34D399"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="#064E3B"
+                app:strokeColor="#059669"
+                app:strokeWidth="1dp"
+                app:cornerRadius="10dp" />
+
+            <!-- বাকি বিক্রি -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPostToCreditSale"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginEnd="6dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="👤 বাকি বিক্রি"
+                android:textColor="#FCA5A5"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="#3B1818"
+                app:strokeColor="#7F1D1D"
+                app:strokeWidth="1dp"
+                app:cornerRadius="10dp" />
+
+            <!-- খরচ -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPostToExpense"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginEnd="6dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="📋 খরচ"
+                android:textColor="#DDD6FE"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="#242535"
+                app:strokeColor="#35364D"
+                app:strokeWidth="1dp"
+                app:cornerRadius="10dp" />
+
+            <!-- ফর্দ/কেনা -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPostToFordi"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginEnd="6dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="🛒 ফর্দ/কেনা"
+                android:textColor="#DDD6FE"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="#242535"
+                app:strokeColor="#35364D"
+                app:strokeWidth="1dp"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- 1. STANDARD CALCULATOR VIEW (KEYPAD) -->
     <LinearLayout
         android:id="@+id/layoutStandardCalc"
         android:layout_width="match_parent"
@@ -138,176 +236,122 @@
         android:orientation="vertical"
         android:visibility="visible">
 
-        <!-- Row 1: C, ( ), %, ÷ -->
+        <!-- Row 1: C, ÷, ×, ⌫ -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="44dp"
+            android:layout_height="48dp"
             android:orientation="horizontal"
-            android:layout_marginBottom="6dp">
+            android:layout_marginBottom="7dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCalcClear"
-                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:text="C"
-                android:textColor="#DC2626"
-                android:textSize="15sp"
+                android:textColor="#EF4444"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                app:backgroundTint="#FEE2E2"
-                app:cornerRadius="10dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalcBackspace"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="2dp"
-                android:text="⌫"
-                android:textColor="#475569"
-                android:textSize="15sp"
-                app:backgroundTint="#F1F5F9"
-                app:cornerRadius="10dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalcPercent"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="2dp"
-                android:text="%"
-                android:textColor="#475569"
-                android:textSize="15sp"
-                app:backgroundTint="#F1F5F9"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="#2D2F40"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCalcDiv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginStart="4dp"
+                android:layout_marginHorizontal="3dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:text="÷"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:backgroundTint="#2563EB"
-                app:cornerRadius="10dp" />
-        </LinearLayout>
-
-        <!-- Row 2: 7, 8, 9, × -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:orientation="horizontal"
-            android:layout_marginBottom="6dp">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalc7"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:text="7"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalc8"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="2dp"
-                android:text="8"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalc9"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="2dp"
-                android:text="9"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
+                android:textSize="19sp"
+                app:backgroundTint="#2D2F40"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCalcMul"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginStart="4dp"
+                android:layout_marginHorizontal="3dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:text="×"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:backgroundTint="#2563EB"
-                app:cornerRadius="10dp" />
-        </LinearLayout>
-
-        <!-- Row 3: 4, 5, 6, - -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:orientation="horizontal"
-            android:layout_marginBottom="6dp">
+                android:textSize="19sp"
+                app:backgroundTint="#2D2F40"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalc4"
-                style="@style/Widget.Material3.Button.TonalButton"
+                android:id="@+id/btnCalcBackspace"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="⌫"
+                android:textColor="#CBD5E1"
+                android:textSize="17sp"
+                app:backgroundTint="#2D2F40"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+        <!-- Row 2: 7, 8, 9, − -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:layout_marginBottom="7dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCalc7"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:text="4"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="7"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalc5"
-                style="@style/Widget.Material3.Button.TonalButton"
+                android:id="@+id/btnCalc8"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginHorizontal="2dp"
-                android:text="5"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
+                android:layout_marginHorizontal="3dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="8"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalc6"
-                style="@style/Widget.Material3.Button.TonalButton"
+                android:id="@+id/btnCalc9"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginHorizontal="2dp"
-                android:text="6"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
+                android:layout_marginHorizontal="3dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="9"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCalcSub"
@@ -315,61 +359,66 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:text="−"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:backgroundTint="#2563EB"
-                app:cornerRadius="10dp" />
+                android:textSize="19sp"
+                app:backgroundTint="#2D2F40"
+                app:cornerRadius="12dp" />
         </LinearLayout>
 
-        <!-- Row 4: 1, 2, 3, + -->
+        <!-- Row 3: 4, 5, 6, + -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="44dp"
+            android:layout_height="48dp"
             android:orientation="horizontal"
-            android:layout_marginBottom="6dp">
+            android:layout_marginBottom="7dp">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalc1"
-                style="@style/Widget.Material3.Button.TonalButton"
+                android:id="@+id/btnCalc4"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:text="1"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="4"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalc2"
-                style="@style/Widget.Material3.Button.TonalButton"
+                android:id="@+id/btnCalc5"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginHorizontal="2dp"
-                android:text="2"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
+                android:layout_marginHorizontal="3dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="5"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalc3"
-                style="@style/Widget.Material3.Button.TonalButton"
+                android:id="@+id/btnCalc6"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginHorizontal="2dp"
-                android:text="3"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
+                android:layout_marginHorizontal="3dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="6"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCalcAdd"
@@ -377,60 +426,66 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:text="+"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:backgroundTint="#2563EB"
-                app:cornerRadius="10dp" />
+                android:textSize="19sp"
+                app:backgroundTint="#2D2F40"
+                app:cornerRadius="12dp" />
         </LinearLayout>
 
-        <!-- Row 5: 0, 00, ., = -->
+        <!-- Row 4: 1, 2, 3, = -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:orientation="horizontal">
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:layout_marginBottom="7dp">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalc0"
-                style="@style/Widget.Material3.Button.TonalButton"
+                android:id="@+id/btnCalc1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:text="0"
-                android:textColor="#0F172A"
-                android:textSize="16sp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="1"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalc00"
-                style="@style/Widget.Material3.Button.TonalButton"
+                android:id="@+id/btnCalc2"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginHorizontal="2dp"
-                android:text="00"
-                android:textColor="#0F172A"
-                android:textSize="15sp"
+                android:layout_marginHorizontal="3dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="2"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalcDot"
-                style="@style/Widget.Material3.Button.TonalButton"
+                android:id="@+id/btnCalc3"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginHorizontal="2dp"
-                android:text="."
-                android:textColor="#0F172A"
-                android:textSize="18sp"
+                android:layout_marginHorizontal="3dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="3"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                app:backgroundTint="#F8FAFC"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCalcEqual"
@@ -438,102 +493,96 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:text="="
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textColor="#1E1B4B"
+                android:textSize="20sp"
                 android:textStyle="bold"
-                app:backgroundTint="#059669"
-                app:cornerRadius="10dp" />
+                app:backgroundTint="#C4B5FD"
+                app:cornerRadius="12dp" />
         </LinearLayout>
 
-        <!-- Quick Percentage Shortcuts Row -->
-        <HorizontalScrollView
+        <!-- Row 5: 0, 00, ., ক্যাশে বসান -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:scrollbars="none">
+            android:layout_height="48dp"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="2dp">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCalc0"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="0"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnCalcQuickPlus5"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="34dp"
-                    android:layout_marginEnd="4dp"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="0dp"
-                    android:text="+৫%"
-                    android:textColor="#059669"
-                    android:textSize="11.5sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="#ECFDF5"
-                    app:cornerRadius="8dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCalc00"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="3dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="00"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnCalcQuickPlus10"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="34dp"
-                    android:layout_marginEnd="4dp"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="0dp"
-                    android:text="+১০%"
-                    android:textColor="#059669"
-                    android:textSize="11.5sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="#ECFDF5"
-                    app:cornerRadius="8dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCalcDot"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="3dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="."
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:backgroundTint="#242535"
+                app:cornerRadius="12dp" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnCalcQuickPlus15"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="34dp"
-                    android:layout_marginEnd="4dp"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="0dp"
-                    android:text="+১৫%"
-                    android:textColor="#059669"
-                    android:textSize="11.5sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="#ECFDF5"
-                    app:cornerRadius="8dp" />
+            <!-- ক্যাশে বসান -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPostToCashDrawer"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="ক্যাশে বসান"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="#7C3AED"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnCalcQuickMinus5"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="34dp"
-                    android:layout_marginEnd="4dp"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="0dp"
-                    android:text="-৫%"
-                    android:textColor="#DC2626"
-                    android:textSize="11.5sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="#FEF2F2"
-                    app:cornerRadius="8dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnCalcQuickMinus10"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="34dp"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="0dp"
-                    android:text="-১০%"
-                    android:textColor="#DC2626"
-                    android:textSize="11.5sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="#FEF2F2"
-                    app:cornerRadius="8dp" />
-            </LinearLayout>
-        </HorizontalScrollView>
+        <!-- Hidden compat views -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone">
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnCalcPercent" android:layout_width="0dp" android:layout_height="0dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnCalcQuickPlus5" android:layout_width="0dp" android:layout_height="0dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnCalcQuickPlus10" android:layout_width="0dp" android:layout_height="0dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnCalcQuickPlus15" android:layout_width="0dp" android:layout_height="0dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnCalcQuickMinus5" android:layout_width="0dp" android:layout_height="0dp" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnCalcQuickMinus10" android:layout_width="0dp" android:layout_height="0dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- 2. RATE × QUANTITY VIEW -->
@@ -561,13 +610,17 @@
                 app:boxCornerRadiusBottomStart="10dp"
                 app:boxCornerRadiusTopEnd="10dp"
                 app:boxCornerRadiusTopStart="10dp"
-                app:prefixText="৳ ">
+                app:boxStrokeColor="#8B5CF6"
+                app:hintTextColor="#C4B5FD"
+                app:prefixText="৳ "
+                app:prefixTextColor="#FFFFFF">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etRatePrice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
+                    android:textColor="#FFFFFF"
                     android:textSize="15sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -582,13 +635,16 @@
                 app:boxCornerRadiusBottomEnd="10dp"
                 app:boxCornerRadiusBottomStart="10dp"
                 app:boxCornerRadiusTopEnd="10dp"
-                app:boxCornerRadiusTopStart="10dp">
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxStrokeColor="#8B5CF6"
+                app:hintTextColor="#C4B5FD">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etRateQty"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
+                    android:textColor="#FFFFFF"
                     android:textSize="15sp" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
@@ -597,10 +653,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:text="একক নির্বাচন করুন:"
-            android:textColor="#64748B"
-            android:textSize="11sp"
+            android:textColor="#94A3B8"
+            android:textSize="11.5sp"
             android:textStyle="bold" />
 
         <HorizontalScrollView
@@ -625,7 +681,7 @@
                     android:gravity="center"
                     android:paddingHorizontal="12dp"
                     android:text="কেজি"
-                    android:textColor="#2563EB"
+                    android:textColor="#FFFFFF"
                     android:textSize="11.5sp"
                     android:textStyle="bold" />
 
@@ -634,13 +690,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="32dp"
                     android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_filter_tab_unselected"
+                    android:background="@drawable/bg_calc_pill_dark"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingHorizontal="12dp"
                     android:text="গ্রাম (/১০০০)"
-                    android:textColor="#64748B"
+                    android:textColor="#94A3B8"
                     android:textSize="11.5sp"
                     android:textStyle="bold" />
 
@@ -649,13 +705,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="32dp"
                     android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_filter_tab_unselected"
+                    android:background="@drawable/bg_calc_pill_dark"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingHorizontal="12dp"
                     android:text="লিটার"
-                    android:textColor="#64748B"
+                    android:textColor="#94A3B8"
                     android:textSize="11.5sp"
                     android:textStyle="bold" />
 
@@ -664,13 +720,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="32dp"
                     android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_filter_tab_unselected"
+                    android:background="@drawable/bg_calc_pill_dark"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingHorizontal="12dp"
                     android:text="পিস / টি"
-                    android:textColor="#64748B"
+                    android:textColor="#94A3B8"
                     android:textSize="11.5sp"
                     android:textStyle="bold" />
 
@@ -679,13 +735,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="32dp"
                     android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_filter_tab_unselected"
+                    android:background="@drawable/bg_calc_pill_dark"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingHorizontal="12dp"
                     android:text="ডজন"
-                    android:textColor="#64748B"
+                    android:textColor="#94A3B8"
                     android:textSize="11.5sp"
                     android:textStyle="bold" />
 
@@ -693,19 +749,19 @@
                     android:id="@+id/chipUnitSack"
                     android:layout_width="wrap_content"
                     android:layout_height="32dp"
-                    android:background="@drawable/bg_filter_tab_unselected"
+                    android:background="@drawable/bg_calc_pill_dark"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingHorizontal="12dp"
                     android:text="বস্তা"
-                    android:textColor="#64748B"
+                    android:textColor="#94A3B8"
                     android:textSize="11.5sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </HorizontalScrollView>
 
-        <!-- Quick Qty presets: ২৫০ গ্রাম, ৫০০ গ্রাম, ১ কেজি, ২ কেজি, ৫ কেজি -->
+        <!-- Quick Qty presets -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -722,14 +778,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginEnd="5dp"
-                    android:background="@drawable/shape_capsule_white"
-                    android:backgroundTint="#F1F5F9"
+                    android:background="@drawable/bg_calc_pill_dark"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingHorizontal="10dp"
                     android:text="২৫০ গ্রাম"
-                    android:textColor="#334155"
+                    android:textColor="#CBD5E1"
                     android:textSize="11sp" />
 
                 <TextView
@@ -737,14 +792,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginEnd="5dp"
-                    android:background="@drawable/shape_capsule_white"
-                    android:backgroundTint="#F1F5F9"
+                    android:background="@drawable/bg_calc_pill_dark"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingHorizontal="10dp"
                     android:text="৫০০ গ্রাম"
-                    android:textColor="#334155"
+                    android:textColor="#CBD5E1"
                     android:textSize="11sp" />
 
                 <TextView
@@ -752,14 +806,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginEnd="5dp"
-                    android:background="@drawable/shape_capsule_white"
-                    android:backgroundTint="#F1F5F9"
+                    android:background="@drawable/bg_calc_pill_dark"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingHorizontal="10dp"
                     android:text="১ (একক)"
-                    android:textColor="#334155"
+                    android:textColor="#CBD5E1"
                     android:textSize="11sp" />
 
                 <TextView
@@ -767,118 +820,29 @@
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
                     android:layout_marginEnd="5dp"
-                    android:background="@drawable/shape_capsule_white"
-                    android:backgroundTint="#F1F5F9"
+                    android:background="@drawable/bg_calc_pill_dark"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingHorizontal="10dp"
                     android:text="২ (একক)"
-                    android:textColor="#334155"
+                    android:textColor="#CBD5E1"
                     android:textSize="11sp" />
 
                 <TextView
                     android:id="@+id/chipPreset5"
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
-                    android:background="@drawable/shape_capsule_white"
-                    android:backgroundTint="#F1F5F9"
+                    android:background="@drawable/bg_calc_pill_dark"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:paddingHorizontal="10dp"
                     android:text="৫ (একক)"
-                    android:textColor="#334155"
+                    android:textColor="#CBD5E1"
                     android:textSize="11sp" />
             </LinearLayout>
         </HorizontalScrollView>
     </LinearLayout>
-
-    <!-- DIRECT POSTING ACTIONS SECTION (সরাসরি এন্ট্রি অপশন) -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="6dp"
-        android:text="হিসাবটি সরাসরি এন্ট্রি করুন:"
-        android:textColor="#0F172A"
-        android:textSize="12sp"
-        android:textStyle="bold" />
-
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <!-- নগদ বিক্রি -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPostToCashSale"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:layout_marginEnd="6dp"
-                android:text="নগদ বিক্রি"
-                android:textColor="#FFFFFF"
-                android:textSize="11.5sp"
-                android:textStyle="bold"
-                app:backgroundTint="#059669"
-                app:cornerRadius="10dp" />
-
-            <!-- বাকি বিক্রি -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPostToCreditSale"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:layout_marginEnd="6dp"
-                android:text="বাকি বিক্রি"
-                android:textColor="#FFFFFF"
-                android:textSize="11.5sp"
-                android:textStyle="bold"
-                app:backgroundTint="#DC2626"
-                app:cornerRadius="10dp" />
-
-            <!-- খরচ যোগ -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPostToExpense"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:layout_marginEnd="6dp"
-                android:text="খরচ যোগ"
-                android:textColor="#FFFFFF"
-                android:textSize="11.5sp"
-                android:textStyle="bold"
-                app:backgroundTint="#D97706"
-                app:cornerRadius="10dp" />
-
-            <!-- বাজার ফর্দ -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPostToFordi"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:layout_marginEnd="6dp"
-                android:text="বাজার ফর্দ"
-                android:textColor="#FFFFFF"
-                android:textSize="11.5sp"
-                android:textStyle="bold"
-                app:backgroundTint="#7C3AED"
-                app:cornerRadius="10dp" />
-
-            <!-- ক্যাশে বসান -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPostToCashDrawer"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:text="ক্যাশে বসান"
-                android:textColor="#FFFFFF"
-                android:textSize="11.5sp"
-                android:textStyle="bold"
-                app:backgroundTint="#2563EB"
-                app:cornerRadius="10dp" />
-        </LinearLayout>
-    </HorizontalScrollView>
 
 </LinearLayout>

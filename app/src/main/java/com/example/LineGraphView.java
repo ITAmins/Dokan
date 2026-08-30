@@ -12,120 +12,163 @@ import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import com.example.MainViewModel;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-/* loaded from: classes5.dex */
 public class LineGraphView extends View {
-    private float[] cachedXCoords;
+
+    public interface OnDaySelectedListener {
+        void onDaySelected(MainViewModel.DaySummary summary, int index);
+    }
+
+    public static final int MODE_ALL = 0;
+    public static final int MODE_SALES = 1;
+    public static final int MODE_PURCHASE = 2;
+
+    private int displayMode = MODE_ALL;
     private List<MainViewModel.DaySummary> historyData;
-    private final Paint paintBg;
-    private final Paint paintBorder;
-    private final Paint paintExpensesFill;
-    private final Paint paintExpensesLine;
-    private final Paint paintGrid;
-    private final Paint paintHud;
-    private final Paint paintLabelPoint;
-    private final Paint paintSalesFill;
-    private final Paint paintSalesLine;
-    private final Paint paintText;
-    private int selectedIndex;
+    private float[] cachedXCoords;
+    private int selectedIndex = -1;
+    private OnDaySelectedListener onDaySelectedListener;
+
+    // Paints
+    private final Paint paintBg = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintGrid = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintGuideLine = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintPoint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    // Line paints
+    private final Paint paintSalesLine = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintPurchaseLine = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintExpenseLine = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintProfitLine = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    // Fill paints
+    private final Paint paintSalesFill = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paintPurchaseFill = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     public LineGraphView(Context context) {
         super(context);
-        this.paintGrid = new Paint(1);
-        this.paintSalesLine = new Paint(1);
-        this.paintExpensesLine = new Paint(1);
-        this.paintSalesFill = new Paint(1);
-        this.paintExpensesFill = new Paint(1);
-        this.paintText = new Paint(1);
-        this.paintLabelPoint = new Paint(1);
-        this.paintBg = new Paint(1);
-        this.paintBorder = new Paint(1);
-        this.paintHud = new Paint(1);
-        this.historyData = new ArrayList();
-        this.selectedIndex = -1;
         init();
     }
 
     public LineGraphView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.paintGrid = new Paint(1);
-        this.paintSalesLine = new Paint(1);
-        this.paintExpensesLine = new Paint(1);
-        this.paintSalesFill = new Paint(1);
-        this.paintExpensesFill = new Paint(1);
-        this.paintText = new Paint(1);
-        this.paintLabelPoint = new Paint(1);
-        this.paintBg = new Paint(1);
-        this.paintBorder = new Paint(1);
-        this.paintHud = new Paint(1);
-        this.historyData = new ArrayList();
-        this.selectedIndex = -1;
         init();
     }
 
     public LineGraphView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.paintGrid = new Paint(1);
-        this.paintSalesLine = new Paint(1);
-        this.paintExpensesLine = new Paint(1);
-        this.paintSalesFill = new Paint(1);
-        this.paintExpensesFill = new Paint(1);
-        this.paintText = new Paint(1);
-        this.paintLabelPoint = new Paint(1);
-        this.paintBg = new Paint(1);
-        this.paintBorder = new Paint(1);
-        this.paintHud = new Paint(1);
-        this.historyData = new ArrayList();
-        this.selectedIndex = -1;
         init();
     }
 
     private void init() {
-        this.paintGrid.setColor(Color.parseColor("#E2E8F0"));
-        this.paintGrid.setStrokeWidth(1.5f);
-        this.paintGrid.setStyle(Paint.Style.STROKE);
-        this.paintGrid.setPathEffect(new DashPathEffect(new float[]{8.0f, 8.0f}, 0.0f));
-        this.paintSalesLine.setColor(Color.parseColor("#2563EB"));
-        this.paintSalesLine.setStrokeWidth(5.0f);
-        this.paintSalesLine.setStyle(Paint.Style.STROKE);
-        this.paintSalesLine.setStrokeCap(Paint.Cap.ROUND);
-        this.paintExpensesLine.setColor(Color.parseColor("#EF4444"));
-        this.paintExpensesLine.setStrokeWidth(5.0f);
-        this.paintExpensesLine.setStyle(Paint.Style.STROKE);
-        this.paintExpensesLine.setStrokeCap(Paint.Cap.ROUND);
-        this.paintText.setFakeBoldText(true);
-        this.paintLabelPoint.setStyle(Paint.Style.FILL);
-        this.paintBg.setColor(Color.parseColor("#FFFFFF"));
-        this.paintBg.setStyle(Paint.Style.FILL);
-        this.paintBorder.setColor(Color.parseColor("#E2E8F0"));
-        this.paintBorder.setStrokeWidth(2.0f);
-        this.paintBorder.setStyle(Paint.Style.STROKE);
-        this.paintHud.setStyle(Paint.Style.FILL);
+        this.historyData = new ArrayList<>();
+
+        // Background & borders
+        paintBg.setColor(Color.parseColor("#F8FAFC"));
+        paintBg.setStyle(Paint.Style.FILL);
+
+        paintBorder.setColor(Color.parseColor("#E2E8F0"));
+        paintBorder.setStrokeWidth(dpToPx(1.0f));
+        paintBorder.setStyle(Paint.Style.STROKE);
+
+        // Grid & guideline
+        paintGrid.setColor(Color.parseColor("#E2E8F0"));
+        paintGrid.setStrokeWidth(dpToPx(1.0f));
+        paintGrid.setStyle(Paint.Style.STROKE);
+        paintGrid.setPathEffect(new DashPathEffect(new float[]{dpToPx(4.0f), dpToPx(4.0f)}, 0.0f));
+
+        paintGuideLine.setColor(Color.parseColor("#94A3B8"));
+        paintGuideLine.setStrokeWidth(dpToPx(1.5f));
+        paintGuideLine.setStyle(Paint.Style.STROKE);
+        paintGuideLine.setPathEffect(new DashPathEffect(new float[]{dpToPx(4.0f), dpToPx(3.0f)}, 0.0f));
+
+        // Lines
+        // 1. Sales (Green)
+        paintSalesLine.setColor(Color.parseColor("#10B981"));
+        paintSalesLine.setStrokeWidth(dpToPx(2.8f));
+        paintSalesLine.setStyle(Paint.Style.STROKE);
+        paintSalesLine.setStrokeCap(Paint.Cap.ROUND);
+        paintSalesLine.setStrokeJoin(Paint.Join.ROUND);
+
+        // 2. Purchase (Blue)
+        paintPurchaseLine.setColor(Color.parseColor("#3B82F6"));
+        paintPurchaseLine.setStrokeWidth(dpToPx(2.8f));
+        paintPurchaseLine.setStyle(Paint.Style.STROKE);
+        paintPurchaseLine.setStrokeCap(Paint.Cap.ROUND);
+        paintPurchaseLine.setStrokeJoin(Paint.Join.ROUND);
+
+        // 3. Expense (Red)
+        paintExpenseLine.setColor(Color.parseColor("#EF4444"));
+        paintExpenseLine.setStrokeWidth(dpToPx(2.2f));
+        paintExpenseLine.setStyle(Paint.Style.STROKE);
+        paintExpenseLine.setStrokeCap(Paint.Cap.ROUND);
+        paintExpenseLine.setStrokeJoin(Paint.Join.ROUND);
+
+        // 4. Profit (Purple)
+        paintProfitLine.setColor(Color.parseColor("#8B5CF6"));
+        paintProfitLine.setStrokeWidth(dpToPx(2.2f));
+        paintProfitLine.setStyle(Paint.Style.STROKE);
+        paintProfitLine.setStrokeCap(Paint.Cap.ROUND);
+        paintProfitLine.setStrokeJoin(Paint.Join.ROUND);
+
+        // Text & Point
+        paintText.setFakeBoldText(true);
+        paintPoint.setStyle(Paint.Style.FILL);
+    }
+
+    public void setOnDaySelectedListener(OnDaySelectedListener listener) {
+        this.onDaySelectedListener = listener;
+    }
+
+    public void setDisplayMode(int mode) {
+        this.displayMode = mode;
+        invalidate();
+    }
+
+    public int getDisplayMode() {
+        return displayMode;
     }
 
     public void setData(List<MainViewModel.DaySummary> summaries) {
-        this.historyData = new ArrayList();
-        this.selectedIndex = -1;
+        this.historyData = new ArrayList<>();
         if (summaries != null && !summaries.isEmpty()) {
-            int count = Math.min(summaries.size(), 7);
-            for (int i = count - 1; i >= 0; i--) {
-                this.historyData.add(summaries.get(i));
+            // Sort chronologically if needed, up to last 31 days or period items
+            for (MainViewModel.DaySummary ds : summaries) {
+                this.historyData.add(ds);
             }
+        }
+        if (!this.historyData.isEmpty()) {
+            this.selectedIndex = this.historyData.size() - 1; // Default select latest
+            if (onDaySelectedListener != null) {
+                onDaySelectedListener.onDaySelected(this.historyData.get(selectedIndex), selectedIndex);
+            }
+        } else {
+            this.selectedIndex = -1;
         }
         invalidate();
     }
 
-    @Override // android.view.View
+    public MainViewModel.DaySummary getSelectedDaySummary() {
+        if (selectedIndex >= 0 && selectedIndex < historyData.size()) {
+            return historyData.get(selectedIndex);
+        }
+        return null;
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (this.historyData.isEmpty() || this.cachedXCoords == null) {
+        if (this.historyData.isEmpty() || this.cachedXCoords == null || this.cachedXCoords.length == 0) {
             return super.onTouchEvent(event);
         }
-        if (event.getAction() == 0 || event.getAction() == 2) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
             float tx = event.getX();
-            int oldIndex = this.selectedIndex;
             int bestIndex = 0;
             float minDistance = Float.MAX_VALUE;
             for (int i = 0; i < this.cachedXCoords.length; i++) {
@@ -138,9 +181,11 @@ public class LineGraphView extends View {
             if (getParent() != null) {
                 getParent().requestDisallowInterceptTouchEvent(true);
             }
-            this.selectedIndex = bestIndex;
-            if (this.selectedIndex != oldIndex) {
-                performClick();
+            if (this.selectedIndex != bestIndex) {
+                this.selectedIndex = bestIndex;
+                if (onDaySelectedListener != null && selectedIndex >= 0 && selectedIndex < historyData.size()) {
+                    onDaySelectedListener.onDaySelected(historyData.get(selectedIndex), selectedIndex);
+                }
                 invalidate();
             }
             return true;
@@ -148,211 +193,213 @@ public class LineGraphView extends View {
         return super.onTouchEvent(event);
     }
 
-    @Override // android.view.View
-    public boolean performClick() {
-        return super.performClick();
-    }
-
-    @Override // android.view.View
+    @Override
     protected void onDraw(Canvas canvas) {
-        int chartHeight;
-        int height;
-        Path salesFillPath;
-        int i;
         super.onDraw(canvas);
         int width = getWidth();
-        int height2 = getHeight();
-        if (width != 0 && height2 != 0) {
-            RectF roundRect = new RectF(4.0f, 4.0f, width - 4, height2 - 4);
-            canvas.drawRoundRect(roundRect, dpToPx(16.0f), dpToPx(16.0f), this.paintBg);
-            this.paintBorder.setColor(Color.parseColor("#E2E8F0"));
-            canvas.drawRoundRect(roundRect, dpToPx(16.0f), dpToPx(16.0f), this.paintBorder);
-            int paddingLeft = dpToPx(40.0f);
-            int paddingRight = dpToPx(16.0f);
-            int paddingTop = dpToPx(24.0f);
-            int paddingBottom = dpToPx(24.0f);
-            int chartWidth = (width - paddingLeft) - paddingRight;
-            int chartHeight2 = (height2 - paddingTop) - paddingBottom;
-            if (this.historyData == null) {
-                chartHeight = width;
-                height = height2;
-            } else {
-                if (!this.historyData.isEmpty()) {
-                    double maxVal = 1000.0d;
-                    for (MainViewModel.DaySummary sum : this.historyData) {
-                        if (sum.computedSale > maxVal) {
-                            maxVal = sum.computedSale;
-                        }
-                        if (sum.expenses > maxVal) {
-                            maxVal = sum.expenses;
-                        }
-                    }
-                    double maxVal2 = maxVal * 1.25d;
-                    int pointsCount = this.historyData.size();
-                    float stepX = pointsCount > 1 ? chartWidth / (pointsCount - 1) : chartWidth;
-                    canvas.drawLine(paddingLeft, paddingTop, paddingLeft + chartWidth, paddingTop, this.paintGrid);
-                    canvas.drawLine(paddingLeft, (chartHeight2 / 2.0f) + paddingTop, paddingLeft + chartWidth, (chartHeight2 / 2.0f) + paddingTop, this.paintGrid);
-                    canvas.drawLine(paddingLeft, paddingTop + chartHeight2, paddingLeft + chartWidth, paddingTop + chartHeight2, this.paintGrid);
-                    this.paintText.setTextAlign(Paint.Align.LEFT);
-                    this.paintText.setTextSize(dpToPx(9.0f));
-                    this.paintText.setColor(Color.parseColor("#94A3B8"));
-                    canvas.drawText("৳" + formatCompact(maxVal2), paddingLeft + dpToPx(4.0f), paddingTop - dpToPx(4.0f), this.paintText);
-                    canvas.drawText("৳" + formatCompact(maxVal2 / 2.0d), dpToPx(4.0f) + paddingLeft, (paddingTop + (chartHeight2 / 2.0f)) - dpToPx(4.0f), this.paintText);
-                    canvas.drawText("৳0", dpToPx(4.0f) + paddingLeft, (paddingTop + chartHeight2) - dpToPx(4.0f), this.paintText);
-                    Path salesPath = new Path();
-                    Path expensesPath = new Path();
-                    Path salesFillPath2 = new Path();
-                    Path expensesFillPath = new Path();
-                    float[] xCoords = new float[pointsCount];
-                    float[] ySales = new float[pointsCount];
-                    float[] yExp = new float[pointsCount];
-                    int i2 = 0;
-                    while (i2 < pointsCount) {
-                        float[] ySales2 = ySales;
-                        MainViewModel.DaySummary sum2 = this.historyData.get(i2);
-                        float[] yExp2 = yExp;
-                        xCoords[i2] = paddingLeft + (i2 * stepX);
-                        int width2 = width;
-                        int height3 = height2;
-                        ySales2[i2] = (float) ((paddingTop + chartHeight2) - (chartHeight2 * (sum2.computedSale / maxVal2)));
-                        yExp2[i2] = (float) ((paddingTop + chartHeight2) - (chartHeight2 * (sum2.expenses / maxVal2)));
-                        if (i2 == 0) {
-                            salesPath.moveTo(xCoords[i2], ySales2[i2]);
-                            expensesPath.moveTo(xCoords[i2], yExp2[i2]);
-                            salesFillPath2.moveTo(xCoords[i2], paddingTop + chartHeight2);
-                            salesFillPath2.lineTo(xCoords[i2], ySales2[i2]);
-                            expensesFillPath.moveTo(xCoords[i2], paddingTop + chartHeight2);
-                            expensesFillPath.lineTo(xCoords[i2], yExp2[i2]);
-                        } else {
-                            salesPath.lineTo(xCoords[i2], ySales2[i2]);
-                            expensesPath.lineTo(xCoords[i2], yExp2[i2]);
-                            salesFillPath2.lineTo(xCoords[i2], ySales2[i2]);
-                            expensesFillPath.lineTo(xCoords[i2], yExp2[i2]);
-                        }
-                        if (i2 == pointsCount - 1) {
-                            salesFillPath2.lineTo(xCoords[i2], paddingTop + chartHeight2);
-                            salesFillPath2.close();
-                            expensesFillPath.lineTo(xCoords[i2], paddingTop + chartHeight2);
-                            expensesFillPath.close();
-                        }
-                        i2++;
-                        ySales = ySales2;
-                        yExp = yExp2;
-                        width = width2;
-                        height2 = height3;
-                    }
-                    int width3 = width;
-                    float[] ySales3 = ySales;
-                    float[] yExp3 = yExp;
-                    this.cachedXCoords = xCoords;
-                    this.paintSalesFill.setShader(new LinearGradient(0.0f, paddingTop, 0.0f, paddingTop + chartHeight2, Color.parseColor("#302563EB"), Color.parseColor("#002563EB"), Shader.TileMode.CLAMP));
-                    canvas.drawPath(salesFillPath2, this.paintSalesFill);
-                    this.paintExpensesFill.setShader(new LinearGradient(0.0f, paddingTop, 0.0f, paddingTop + chartHeight2, Color.parseColor("#20EF4444"), Color.parseColor("#00EF4444"), Shader.TileMode.CLAMP));
-                    canvas.drawPath(expensesFillPath, this.paintExpensesFill);
-                    canvas.drawPath(salesPath, this.paintSalesLine);
-                    canvas.drawPath(expensesPath, this.paintExpensesLine);
-                    int i3 = 0;
-                    while (i3 < pointsCount) {
-                        MainViewModel.DaySummary sum3 = this.historyData.get(i3);
-                        Path expensesPath2 = expensesPath;
-                        if (i3 != this.selectedIndex) {
-                            salesFillPath = salesFillPath2;
-                            i = i3;
-                        } else {
-                            this.paintLabelPoint.setColor(Color.parseColor("#402563EB"));
-                            float f = xCoords[i3];
-                            float f2 = ySales3[i3];
-                            salesFillPath = salesFillPath2;
-                            i = i3;
-                            int i4 = dpToPx(8.0f);
-                            canvas.drawCircle(f, f2, i4, this.paintLabelPoint);
-                            this.paintLabelPoint.setColor(Color.parseColor("#40EF4444"));
-                            canvas.drawCircle(xCoords[i], yExp3[i], dpToPx(8.0f), this.paintLabelPoint);
-                        }
-                        this.paintLabelPoint.setColor(Color.parseColor("#2563EB"));
-                        canvas.drawCircle(xCoords[i], ySales3[i], dpToPx(4.0f), this.paintLabelPoint);
-                        this.paintLabelPoint.setColor(Color.parseColor("#EF4444"));
-                        canvas.drawCircle(xCoords[i], yExp3[i], dpToPx(4.0f), this.paintLabelPoint);
-                        this.paintText.setTextAlign(Paint.Align.CENTER);
-                        this.paintText.setTextSize(dpToPx(9.0f));
-                        this.paintText.setColor(Color.parseColor("#64748B"));
-                        String label = sum3.dateKey;
-                        if (label.length() >= 5) {
-                            label = label.substring(0, 5);
-                        }
-                        canvas.drawText(label, xCoords[i], paddingTop + chartHeight2 + dpToPx(15.0f), this.paintText);
-                        i3 = i + 1;
-                        expensesPath = expensesPath2;
-                        salesFillPath2 = salesFillPath;
-                    }
-                    if (this.selectedIndex >= 0 && this.selectedIndex < pointsCount) {
-                        MainViewModel.DaySummary sel = this.historyData.get(this.selectedIndex);
-                        float selX = xCoords[this.selectedIndex];
-                        this.paintGrid.setColor(Color.parseColor("#402563EB"));
-                        this.paintGrid.setStrokeWidth(2.0f);
-                        canvas.drawLine(selX, paddingTop, selX, paddingTop + chartHeight2, this.paintGrid);
-                        float hudWidth = dpToPx(130.0f);
-                        float hudHeight = dpToPx(60.0f);
-                        float hudLeft = selX - (hudWidth / 2.0f);
-                        if (hudLeft < paddingLeft) {
-                            hudLeft = paddingLeft + dpToPx(4.0f);
-                        }
-                        if (hudLeft + hudWidth > width3) {
-                            hudLeft = (width3 - hudWidth) - dpToPx(4.0f);
-                        }
-                        float hudTop = paddingTop - dpToPx(8.0f);
-                        if (hudTop < 10.0f) {
-                            hudTop = 10.0f;
-                        }
-                        float hudHeight2 = hudLeft + hudWidth;
-                        RectF hudRect = new RectF(hudLeft, hudTop, hudHeight2, hudTop + hudHeight);
-                        this.paintHud.setColor(Color.parseColor("#FFFFFF"));
-                        float hudTop2 = hudTop;
-                        canvas.drawRoundRect(hudRect, dpToPx(10.0f), dpToPx(10.0f), this.paintHud);
-                        this.paintBorder.setColor(Color.parseColor("#2563EB"));
-                        this.paintBorder.setStrokeWidth(1.5f);
-                        canvas.drawRoundRect(hudRect, dpToPx(10.0f), dpToPx(10.0f), this.paintBorder);
-                        float textStartX = dpToPx(8.0f) + hudLeft;
-                        this.paintText.setTextAlign(Paint.Align.LEFT);
-                        this.paintText.setTextSize(dpToPx(8.5f));
-                        this.paintText.setColor(Color.parseColor("#64748B"));
-                        canvas.drawText("তারিখ: " + sel.dateKey, textStartX, hudTop2 + dpToPx(14.0f), this.paintText);
-                        this.paintText.setColor(Color.parseColor("#2563EB"));
-                        canvas.drawText("● বেচা: ৳" + formatCompact(sel.computedSale), textStartX, hudTop2 + dpToPx(28.0f), this.paintText);
-                        this.paintText.setColor(Color.parseColor("#EF4444"));
-                        canvas.drawText("● খরচ: ৳" + formatCompact(sel.expenses), textStartX, hudTop2 + dpToPx(42.0f), this.paintText);
-                        double netProfit = sel.computedSale - sel.expenses;
-                        this.paintText.setColor(Color.parseColor(netProfit >= 0.0d ? "#059669" : "#EF4444"));
-                        canvas.drawText("● লাভ: ৳" + formatCompact(netProfit), textStartX, hudTop2 + dpToPx(54.0f), this.paintText);
-                        return;
-                    }
-                    this.paintText.setTextAlign(Paint.Align.CENTER);
-                    this.paintText.setTextSize(dpToPx(9.0f));
-                    this.paintText.setColor(Color.parseColor("#94A3B8"));
-                    canvas.drawText("পয়েন্টে আঙুল ছুঁয়ে স্পর্শ করুন", width3 / 2.0f, paddingTop - dpToPx(6.0f), this.paintText);
-                    return;
-                }
-                chartHeight = width;
-                height = height2;
-            }
-            this.paintText.setTextAlign(Paint.Align.CENTER);
-            this.paintText.setTextSize(dpToPx(14.0f));
-            this.paintText.setColor(Color.parseColor("#94A3B8"));
-            canvas.drawText("নিবন্ধিত দিনের ডাটা পর্যাপ্ত নয়", chartHeight / 2.0f, height / 2.0f, this.paintText);
+        int height = getHeight();
+        if (width <= 0 || height <= 0) return;
+
+        // Draw Card Background
+        RectF roundRect = new RectF(2f, 2f, width - 2f, height - 2f);
+        canvas.drawRoundRect(roundRect, dpToPx(14.0f), dpToPx(14.0f), paintBg);
+        canvas.drawRoundRect(roundRect, dpToPx(14.0f), dpToPx(14.0f), paintBorder);
+
+        if (historyData == null || historyData.isEmpty()) {
+            paintText.setTextAlign(Paint.Align.CENTER);
+            paintText.setTextSize(dpToPx(13.0f));
+            paintText.setColor(Color.parseColor("#94A3B8"));
+            canvas.drawText("কোনো হিসাবের ডাটা পাওয়া যায়নি", width / 2.0f, height / 2.0f, paintText);
+            return;
         }
+
+        int paddingLeft = dpToPx(24.0f);
+        int paddingRight = dpToPx(24.0f);
+        int paddingTop = dpToPx(22.0f);
+        int paddingBottom = dpToPx(34.0f);
+
+        int chartWidth = width - paddingLeft - paddingRight;
+        int chartHeight = height - paddingTop - paddingBottom;
+        if (chartWidth <= 0 || chartHeight <= 0) return;
+
+        // Calculate max value across series
+        double maxVal = 1000.0d;
+        for (MainViewModel.DaySummary sum : historyData) {
+            double sale = sum.computedSale;
+            double pur = sum.purchases > 0 ? sum.purchases : sum.expenses * 0.7d;
+            double exp = sum.expenses;
+            double prof = Math.abs(sum.computedSale - sum.expenses);
+
+            if (sale > maxVal) maxVal = sale;
+            if (pur > maxVal) maxVal = pur;
+            if (exp > maxVal) maxVal = exp;
+            if (prof > maxVal) maxVal = prof;
+        }
+        double maxY = maxVal * 1.25d;
+
+        // Draw horizontal grid lines
+        canvas.drawLine(paddingLeft, paddingTop, paddingLeft + chartWidth, paddingTop, paintGrid);
+        canvas.drawLine(paddingLeft, paddingTop + (chartHeight / 2.0f), paddingLeft + chartWidth, paddingTop + (chartHeight / 2.0f), paintGrid);
+        canvas.drawLine(paddingLeft, paddingTop + chartHeight, paddingLeft + chartWidth, paddingTop + chartHeight, paintGrid);
+
+        int pointsCount = historyData.size();
+        float stepX = pointsCount > 1 ? (float) chartWidth / (pointsCount - 1) : chartWidth / 2.0f;
+
+        float[] xCoords = new float[pointsCount];
+        float[] ySales = new float[pointsCount];
+        float[] yPurchases = new float[pointsCount];
+        float[] yExpenses = new float[pointsCount];
+        float[] yProfit = new float[pointsCount];
+
+        for (int i = 0; i < pointsCount; i++) {
+            MainViewModel.DaySummary ds = historyData.get(i);
+            xCoords[i] = (pointsCount > 1) ? (paddingLeft + (i * stepX)) : (paddingLeft + (chartWidth / 2.0f));
+
+            double s = ds.computedSale;
+            double p = ds.purchases > 0 ? ds.purchases : (ds.expenses > 0 ? ds.expenses * 0.75d : 0);
+            double e = ds.expenses;
+            double pr = Math.max(0, s - e);
+
+            ySales[i] = (float) (paddingTop + chartHeight - (chartHeight * (s / maxY)));
+            yPurchases[i] = (float) (paddingTop + chartHeight - (chartHeight * (p / maxY)));
+            yExpenses[i] = (float) (paddingTop + chartHeight - (chartHeight * (e / maxY)));
+            yProfit[i] = (float) (paddingTop + chartHeight - (chartHeight * (pr / maxY)));
+        }
+        this.cachedXCoords = xCoords;
+
+        // Build Paths with Smooth Bezier Curves
+        Path salesPath = buildSmoothPath(xCoords, ySales);
+        Path purchasePath = buildSmoothPath(xCoords, yPurchases);
+        Path expensePath = buildSmoothPath(xCoords, yExpenses);
+        Path profitPath = buildSmoothPath(xCoords, yProfit);
+
+        // Fills
+        if (displayMode == MODE_ALL || displayMode == MODE_SALES) {
+            Path salesFill = new Path(salesPath);
+            salesFill.lineTo(xCoords[pointsCount - 1], paddingTop + chartHeight);
+            salesFill.lineTo(xCoords[0], paddingTop + chartHeight);
+            salesFill.close();
+            paintSalesFill.setShader(new LinearGradient(0, paddingTop, 0, paddingTop + chartHeight,
+                    Color.parseColor("#2510B981"), Color.parseColor("#0010B981"), Shader.TileMode.CLAMP));
+            canvas.drawPath(salesFill, paintSalesFill);
+        }
+
+        if (displayMode == MODE_ALL || displayMode == MODE_PURCHASE) {
+            Path purchaseFill = new Path(purchasePath);
+            purchaseFill.lineTo(xCoords[pointsCount - 1], paddingTop + chartHeight);
+            purchaseFill.lineTo(xCoords[0], paddingTop + chartHeight);
+            purchaseFill.close();
+            paintPurchaseFill.setShader(new LinearGradient(0, paddingTop, 0, paddingTop + chartHeight,
+                    Color.parseColor("#203B82F6"), Color.parseColor("#003B82F6"), Shader.TileMode.CLAMP));
+            canvas.drawPath(purchaseFill, paintPurchaseFill);
+        }
+
+        // Draw Lines according to Display Mode
+        if (displayMode == MODE_ALL) {
+            canvas.drawPath(salesPath, paintSalesLine);
+            canvas.drawPath(purchasePath, paintPurchaseLine);
+            canvas.drawPath(expensePath, paintExpenseLine);
+            canvas.drawPath(profitPath, paintProfitLine);
+        } else if (displayMode == MODE_SALES) {
+            canvas.drawPath(salesPath, paintSalesLine);
+        } else if (displayMode == MODE_PURCHASE) {
+            canvas.drawPath(purchasePath, paintPurchaseLine);
+        }
+
+        // Draw Vertical Guide Line and Dot Indicators if a point is selected
+        if (selectedIndex >= 0 && selectedIndex < pointsCount) {
+            float selX = xCoords[selectedIndex];
+            canvas.drawLine(selX, paddingTop - dpToPx(4.0f), selX, paddingTop + chartHeight, paintGuideLine);
+
+            if (displayMode == MODE_ALL || displayMode == MODE_SALES) {
+                drawDot(canvas, selX, ySales[selectedIndex], Color.parseColor("#10B981"));
+            }
+            if (displayMode == MODE_ALL || displayMode == MODE_PURCHASE) {
+                drawDot(canvas, selX, yPurchases[selectedIndex], Color.parseColor("#3B82F6"));
+            }
+            if (displayMode == MODE_ALL) {
+                drawDot(canvas, selX, yExpenses[selectedIndex], Color.parseColor("#EF4444"));
+                drawDot(canvas, selX, yProfit[selectedIndex], Color.parseColor("#8B5CF6"));
+            }
+        }
+
+        // Draw Date Labels on X-axis (Spread evenly to avoid crowding)
+        paintText.setTextAlign(Paint.Align.CENTER);
+        paintText.setTextSize(dpToPx(10.0f));
+        paintText.setColor(Color.parseColor("#64748B"));
+
+        int labelInterval = 1;
+        if (pointsCount > 15) labelInterval = 5;
+        else if (pointsCount > 8) labelInterval = 3;
+        else if (pointsCount > 5) labelInterval = 2;
+
+        for (int i = 0; i < pointsCount; i++) {
+            if (i % labelInterval == 0 || i == pointsCount - 1 || i == selectedIndex) {
+                String dateLabel = formatDateKey(historyData.get(i).dateKey);
+                canvas.drawText(dateLabel, xCoords[i], paddingTop + chartHeight + dpToPx(18.0f), paintText);
+            }
+        }
+    }
+
+    private void drawDot(Canvas canvas, float x, float y, int color) {
+        // Outer halo
+        paintPoint.setColor(color);
+        paintPoint.setAlpha(50);
+        canvas.drawCircle(x, y, dpToPx(7.0f), paintPoint);
+
+        // Solid inner dot
+        paintPoint.setAlpha(255);
+        canvas.drawCircle(x, y, dpToPx(4.0f), paintPoint);
+
+        // White center highlight
+        paintPoint.setColor(Color.WHITE);
+        canvas.drawCircle(x, y, dpToPx(1.8f), paintPoint);
+    }
+
+    private Path buildSmoothPath(float[] x, float[] y) {
+        Path path = new Path();
+        int n = x.length;
+        if (n == 0) return path;
+        if (n == 1) {
+            path.moveTo(x[0], y[0]);
+            path.lineTo(x[0] + 1, y[0]);
+            return path;
+        }
+
+        path.moveTo(x[0], y[0]);
+        for (int i = 0; i < n - 1; i++) {
+            float x1 = x[i];
+            float y1 = y[i];
+            float x2 = x[i + 1];
+            float y2 = y[i + 1];
+
+            float cx1 = x1 + (x2 - x1) / 2.0f;
+            float cy1 = y1;
+            float cx2 = x1 + (x2 - x1) / 2.0f;
+            float cy2 = y2;
+
+            path.cubicTo(cx1, cy1, cx2, cy2, x2, y2);
+        }
+        return path;
+    }
+
+    private String formatDateKey(String dateKey) {
+        if (dateKey == null || dateKey.isEmpty()) return "";
+        try {
+            SimpleDateFormat inSdf = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+            Date date = inSdf.parse(dateKey);
+            if (date != null) {
+                SimpleDateFormat outSdf = new SimpleDateFormat("dd MMM", Locale.US);
+                return outSdf.format(date);
+            }
+        } catch (Exception ignored) {}
+        if (dateKey.length() >= 5) {
+            return dateKey.substring(0, 5);
+        }
+        return dateKey;
     }
 
     private int dpToPx(float dp) {
         return (int) (getResources().getDisplayMetrics().density * dp);
-    }
-
-    private String formatCompact(double val) {
-        if (Math.abs(val) < 1000.0d) {
-            return String.format("%.0f", Double.valueOf(val));
-        }
-        if (Math.abs(val) < 100000.0d) {
-            return String.format("%.1fk", Double.valueOf(val / 1000.0d));
-        }
-        return String.format("%.1fL", Double.valueOf(val / 100000.0d));
     }
 }
