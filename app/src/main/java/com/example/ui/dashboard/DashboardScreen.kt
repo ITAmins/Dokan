@@ -1,12 +1,8 @@
 package com.example.ui.dashboard
 
 import android.app.DatePickerDialog
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -15,7 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -23,1557 +18,723 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.ExpenseModel
 import com.example.PdfExporter
+import com.example.ui.components.*
 import com.example.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class TransactionEntry(
-    val id: String,
-    val title: String,
-    val amount: Double,
-    val isIncome: Boolean,
-    val category: String,
-    val time: String,
-    val date: String,
-    val note: String = ""
-)
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
-    currentDateString: String,
-    dayOfWeek: String,
-    openingBalance: Double,
-    dailyCashSales: Double,
-    dailyBakiCollection: Double,
-    dailyShopExpenses: Double,
-    dailyHomeExpenses: Double,
-    expenseList: List<ExpenseModel> = emptyList(),
-    onPrevDayClick: () -> Unit = {},
-    onNextDayClick: () -> Unit = {},
-    onDateSelect: (String) -> Unit = {},
-    onAddIncome: (amount: Double, type: String, note: String) -> Unit = { _, _, _ -> },
-    onAddExpense: (amount: Double, category: String, isHome: Boolean, note: String) -> Unit = { _, _, _, _ -> },
-    onUpdateOpeningBalance: (newBalance: Double) -> Unit = {},
-    onDeleteExpense: (expenseId: String) -> Unit = {},
+    viewModel: DashboardViewModel,
+    onNavigate: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val totalIncome = dailyCashSales + dailyBakiCollection
-    val totalExpenses = dailyShopExpenses + dailyHomeExpenses
-    val currentBalance = openingBalance + totalIncome - totalExpenses
-
-    var showAddIncomeDialog by remember { mutableStateOf(false) }
-    var showAddExpenseDialog by remember { mutableStateOf(false) }
-    var showEditOpeningCashDialog by remember { mutableStateOf(false) }
-    var selectedTab by remember { mutableIntStateOf(0) } // 0 = All, 1 = Income, 2 = Expense
-    var searchQuery by remember { mutableStateOf("") }
-
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    // Convert existing expense list to transactions
-    val transactions = remember(expenseList, dailyCashSales, dailyBakiCollection, currentDateString) {
-        val list = mutableListOf<TransactionEntry>()
-        if (dailyCashSales > 0) {
-            list.add(
-                TransactionEntry(
-                    id = "income_cash_sale",
-                    title = "নগদ বিক্রয় ক্যাশ",
-                    amount = dailyCashSales,
-                    isIncome = true,
-                    category = "নগদ বিক্রয়",
-                    time = "সারাদিনের হিসাব",
-                    date = currentDateString,
-                    note = "দোকানের নগদ ক্যাশ বিক্রি"
-                )
-            )
-        }
-        if (dailyBakiCollection > 0) {
-            list.add(
-                TransactionEntry(
-                    id = "income_baki_col",
-                    title = "বকেয়া বাকি আদায়",
-                    amount = dailyBakiCollection,
-                    isIncome = true,
-                    category = "বাকি আদায়",
-                    time = "সারাদিনের হিসাব",
-                    date = currentDateString,
-                    note = "কাস্টমারদের বকেয়া কালেকশন"
-                )
-            )
-        }
-        expenseList.forEach { exp ->
-            val isHome = ExpenseModel.TYPE_HOME.equals(exp.getType(), ignoreCase = true)
-            list.add(
-                TransactionEntry(
-                    id = exp.getId() ?: UUID.randomUUID().toString(),
-                    title = exp.getName() ?: "সাধারণ খরচ",
-                    amount = exp.getAmount(),
-                    isIncome = false,
-                    category = if (isHome) "সংসার খরচ" else "দোকান খরচ",
-                    time = exp.getTime() ?: "",
-                    date = exp.getDate() ?: currentDateString,
-                    note = ""
-                )
-            )
-        }
-        list
-    }
+    var showAddExpenseDialog by remember { mutableStateOf(false) }
+    var expenseDialogType by remember { mutableStateOf(ExpenseModel.TYPE_SHOP) }
+    var showEditOpeningCashDialog by remember { mutableStateOf(false) }
+    var showActualCashDialog by remember { mutableStateOf(false) }
+    var selectedFilterTab by remember { mutableIntStateOf(0) } // 0: All, 1: Sales, 2: Expenses/Purchases
+    var searchQuery by remember { mutableStateOf("") }
 
-    val filteredTransactions = remember(transactions, selectedTab, searchQuery) {
-        transactions.filter { tx ->
-            val matchesTab = when (selectedTab) {
-                1 -> tx.isIncome
-                2 -> !tx.isIncome
-                else -> true
-            }
-            val matchesSearch = if (searchQuery.isBlank()) true else {
-                tx.title.contains(searchQuery, ignoreCase = true) ||
-                tx.category.contains(searchQuery, ignoreCase = true) ||
-                tx.amount.toString().contains(searchQuery)
-            }
-            matchesTab && matchesSearch
+    val filteredExpenses = remember(uiState.expensesList, selectedFilterTab, searchQuery) {
+        val list = when (selectedFilterTab) {
+            1 -> uiState.expensesList.filter { !it.isPurchase && !it.isHomeExpense }
+            2 -> uiState.expensesList.filter { it.isPurchase || it.isHomeExpense }
+            else -> uiState.expensesList
+        }
+        if (searchQuery.isBlank()) list else {
+            val q = searchQuery.trim().lowercase()
+            list.filter { (it.name ?: "").lowercase().contains(q) }
         }
     }
 
     Scaffold(
-        modifier = modifier
-            .fillMaxSize()
-            .testTag("compose_dashboard_screen"),
-        containerColor = NotebookBackground
-    ) { innerPadding ->
+        modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            DokanTopBar(
+                title = "মাওয়া ক্যাশ খাতা",
+                subtitle = "${uiState.activeDateKey} (${uiState.activeDayOfWeek})",
+                onNavigationClick = { onNavigate("open_drawer") },
+                onCalculatorClick = { onNavigate("note_counter") },
+                onSyncClick = { viewModel.loadDataForActiveCalendar() }
+            )
+        }
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+                .padding(paddingValues),
+            contentPadding = PaddingValues(bottom = 24.dp)
         ) {
-            // 1. Notebook Spiral Header & Date Navigator
+            // 1. Bengali Date Selector Header
             item {
-                NotebookDateHeader(
-                    dateString = currentDateString,
-                    dayOfWeek = dayOfWeek,
-                    onPrevClick = onPrevDayClick,
-                    onNextClick = onNextDayClick,
-                    onDateClick = {
-                        val c = Calendar.getInstance()
-                        try {
-                            val parsed = SimpleDateFormat("dd-MM-yyyy", Locale.US).parse(currentDateString)
-                            if (parsed != null) c.time = parsed
-                        } catch (_: Exception) {}
+                DateSelectorHeader(
+                    dateStr = uiState.activeDateKey,
+                    dayStr = uiState.activeDayOfWeek,
+                    onPrevClick = { viewModel.moveToPreviousDay() },
+                    onNextClick = { viewModel.moveToNextDay() },
+                    onCalendarClick = {
+                        val cal = Calendar.getInstance()
                         DatePickerDialog(
                             context,
-                            { _, y, m, d ->
-                                val newDateStr = String.format(Locale.US, "%02d-%02d-%04d", d, m + 1, y)
-                                onDateSelect(newDateStr)
-                            },
-                            c.get(Calendar.YEAR),
-                            c.get(Calendar.MONTH),
-                            c.get(Calendar.DAY_OF_MONTH)
+                            { _, y, m, d -> viewModel.selectDate(y, m, d) },
+                            cal.get(Calendar.YEAR),
+                            cal.get(Calendar.MONTH),
+                            cal.get(Calendar.DAY_OF_MONTH)
                         ).show()
-                    }
+                    },
+                    onTodayClick = { viewModel.setDateToToday() }
                 )
             }
 
-            // 2. Primary Card: Current Cash Balance in Hand
+            // 2. Primary Financial Balance Hero Card
             item {
-                CurrentBalanceCard(
-                    currentBalance = currentBalance,
-                    openingBalance = openingBalance,
-                    totalIncome = totalIncome,
-                    totalExpenses = totalExpenses,
-                    onEditOpeningCash = { showEditOpeningCashDialog = true }
-                )
-            }
-
-            // 3. Dual Daily Metric Cards: Total Daily Income & Total Daily Expenses
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // Total Daily Income Card
-                    DailyIncomeCard(
-                        modifier = Modifier.weight(1f),
-                        totalIncome = totalIncome,
-                        cashSales = dailyCashSales,
-                        bakiCollection = dailyBakiCollection,
-                        onAddClick = { showAddIncomeDialog = true }
-                    )
-
-                    // Total Daily Expense Card
-                    DailyExpenseCard(
-                        modifier = Modifier.weight(1f),
-                        totalExpenses = totalExpenses,
-                        shopExpenses = dailyShopExpenses,
-                        homeExpenses = dailyHomeExpenses,
-                        onAddClick = { showAddExpenseDialog = true }
+                Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    HeroBalanceCard(
+                        openingCash = uiState.openingCash,
+                        expectedCash = uiState.expectedClosingCash,
+                        actualCash = uiState.actualAvailableCash,
+                        onEditOpening = { showEditOpeningCashDialog = true },
+                        onEditActual = { showActualCashDialog = true }
                     )
                 }
             }
 
-            // 4. Notebook Ruled Ledger Summary Card (খাতার দৈনন্দিন ব্যালেন্স শিট)
+            // 3. Grid of 4 Key Financial Metrics
             item {
-                NotebookRuledLedgerCard(
-                    openingBalance = openingBalance,
-                    cashSales = dailyCashSales,
-                    bakiCollection = dailyBakiCollection,
-                    shopExpenses = dailyShopExpenses,
-                    homeExpenses = dailyHomeExpenses,
-                    totalIncome = totalIncome,
-                    totalExpenses = totalExpenses,
-                    currentBalance = currentBalance
-                )
-            }
-
-            // 5. Section Header & Filter Tabs for Transactions
-            item {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp, 20.dp)
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .background(BalanceBlue)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "আজকের লেনদেনের তালিকা",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = TextPrimary
-                            )
-                        }
-
-                        Text(
-                            text = "${PdfExporter.toBengaliDigits(filteredTransactions.size.toString())} টি এন্ট্রি",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = TextSecondary
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        DokanSummaryCard(
+                            title = "মোট বিক্রি",
+                            amount = uiState.totalSales,
+                            subtitle = "নগদ: ৳${PdfExporter.formatBengaliNumber(uiState.cashSales)} | বাকি: ৳${PdfExporter.formatBengaliNumber(uiState.creditSales)}",
+                            icon = Icons.Default.TrendingUp,
+                            iconBgColor = IncomeGreenBg,
+                            iconTintColor = IncomeGreen,
+                            type = AmountType.INCOME,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        DokanSummaryCard(
+                            title = "পণ্য ক্রয় (স্টক)",
+                            amount = uiState.totalPurchases,
+                            subtitle = "মাল কেনার ক্যাশ খরচ",
+                            icon = Icons.Default.ShoppingCart,
+                            iconBgColor = BalanceBlueBg,
+                            iconTintColor = BalanceBlue,
+                            type = AmountType.NEUTRAL,
+                            modifier = Modifier.weight(1f)
                         )
                     }
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // Filter Tab Pills
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        NotebookFilterPill(
-                            label = "সকল হিসাব (${transactions.size})",
-                            isSelected = selectedTab == 0,
-                            onClick = { selectedTab = 0 }
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        DokanSummaryCard(
+                            title = "দোকান ও অন্যান্য খরচ",
+                            amount = uiState.totalShopExpenses + uiState.totalHomeExpenses,
+                            subtitle = "দোকান: ৳${PdfExporter.formatBengaliNumber(uiState.totalShopExpenses)} | বাড়ি: ৳${PdfExporter.formatBengaliNumber(uiState.totalHomeExpenses)}",
+                            icon = Icons.Default.ReceiptLong,
+                            iconBgColor = ExpenseRedBg,
+                            iconTintColor = ExpenseRed,
+                            type = AmountType.EXPENSE,
+                            modifier = Modifier.weight(1f)
                         )
-                        NotebookFilterPill(
-                            label = "আয় (${transactions.count { it.isIncome }})",
-                            isSelected = selectedTab == 1,
-                            selectedColor = IncomeGreen,
-                            selectedBg = IncomeGreenBg,
-                            onClick = { selectedTab = 1 }
-                        )
-                        NotebookFilterPill(
-                            label = "খরচ (${transactions.count { !it.isIncome }})",
-                            isSelected = selectedTab == 2,
-                            selectedColor = ExpenseRed,
-                            selectedBg = ExpenseRedBg,
-                            onClick = { selectedTab = 2 }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        DokanSummaryCard(
+                            title = "আনুমানিক নিট লাভ",
+                            amount = uiState.estimatedNetProfit,
+                            subtitle = "মার্জিন: ${(uiState.estimatedGrossMarginRate * 100).toInt()}%",
+                            icon = Icons.Default.Star,
+                            iconBgColor = AmberGoldBg,
+                            iconTintColor = AmberGold,
+                            type = if (uiState.estimatedNetProfit >= 0) AmountType.INCOME else AmountType.EXPENSE,
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }
             }
 
-            // 6. Transaction Items / Empty State
-            if (filteredTransactions.isEmpty()) {
+            // 4. Quick Action Buttons
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                ) {
+                    DokanButton(
+                        text = "+ খরচ",
+                        icon = Icons.Default.RemoveCircleOutline,
+                        containerColor = ExpenseRed,
+                        height = 44,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            expenseDialogType = ExpenseModel.TYPE_SHOP
+                            showAddExpenseDialog = true
+                        }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    DokanButton(
+                        text = "+ মাল কেনা",
+                        icon = Icons.Default.AddShoppingCart,
+                        containerColor = BalanceBlue,
+                        height = 44,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            expenseDialogType = ExpenseModel.TYPE_PURCHASE
+                            showAddExpenseDialog = true
+                        }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    DokanButton(
+                        text = "+ বাড়ির খরচ",
+                        icon = Icons.Default.Home,
+                        containerColor = DokanPurplePrimary,
+                        height = 44,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            expenseDialogType = ExpenseModel.TYPE_HOME
+                            showAddExpenseDialog = true
+                        }
+                    )
+                }
+            }
+
+            // 5. 7-Day Trend Chart
+            if (uiState.trendPoints.isNotEmpty()) {
                 item {
-                    NotebookEmptyStateCard(
-                        isSearching = searchQuery.isNotBlank(),
-                        selectedTab = selectedTab,
-                        onAddIncomeClick = { showAddIncomeDialog = true },
-                        onAddExpenseClick = { showAddExpenseDialog = true }
+                    DokanCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "গত ৭ দিনের বিক্রয় ট্রেন্ড",
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp
+                                    )
+                                )
+                                Text(
+                                    text = "দৈনিক মোট বিক্রি (৳)",
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontSize = 11.sp
+                                    )
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(12.dp))
+                            DokanBezierTrendChart(
+                                points = uiState.trendPoints,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(130.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // 6. Purchase Slices Donut Chart
+            if (uiState.purchaseSlices.isNotEmpty()) {
+                item {
+                    DokanCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = "কোম্পানি/পণ্য ক্রয় ব্রেকডাউন",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            DokanDonutChart(
+                                slices = uiState.purchaseSlices,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
+            }
+
+            // 7. Transaction List Header & Filter Tabs
+            item {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Text(
+                        text = "আজকের লেনদেন ও খরচের তালিকা",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                            .padding(4.dp)
+                    ) {
+                        FilterPillTab(
+                            title = "সকল (${uiState.expensesList.size})",
+                            isSelected = selectedFilterTab == 0,
+                            modifier = Modifier.weight(1f),
+                            onClick = { selectedFilterTab = 0 }
+                        )
+                        FilterPillTab(
+                            title = "দোকান খরচ",
+                            isSelected = selectedFilterTab == 1,
+                            modifier = Modifier.weight(1f),
+                            onClick = { selectedFilterTab = 1 }
+                        )
+                        FilterPillTab(
+                            title = "মাল ক্রয় / বাড়ি",
+                            isSelected = selectedFilterTab == 2,
+                            modifier = Modifier.weight(1f),
+                            onClick = { selectedFilterTab = 2 }
+                        )
+                    }
+                }
+            }
+
+            // 8. Expense / Transaction Items
+            if (filteredExpenses.isEmpty()) {
+                item {
+                    DokanEmptyState(
+                        title = "কোনো লেনদেন এন্ট্রি নেই",
+                        message = "আজকের দিনে নতুন খরচ বা মাল কেনার হিসাব যোগ করতে উপরের বাটন ব্যবহার করুন।",
+                        icon = Icons.Default.ReceiptLong
                     )
                 }
             } else {
-                items(filteredTransactions, key = { it.id }) { tx ->
-                    NotebookTransactionRowCard(
-                        transaction = tx,
-                        onDeleteClick = {
-                            if (!tx.isIncome) {
-                                onDeleteExpense(tx.id)
-                            }
-                        }
+                items(filteredExpenses, key = { it.id }) { expense ->
+                    ExpenseRowItem(
+                        expense = expense,
+                        onDelete = { viewModel.deleteExpense(expense.id) },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
                 }
             }
         }
     }
 
-    // Dialogs
-    if (showAddIncomeDialog) {
-        AddIncomeDialog(
-            onDismiss = { showAddIncomeDialog = false },
-            onConfirm = { amount, type, note ->
-                onAddIncome(amount, type, note)
-                showAddIncomeDialog = false
-            }
-        )
-    }
-
+    // Dialog: Add Expense / Purchase
     if (showAddExpenseDialog) {
         AddExpenseDialog(
+            type = expenseDialogType,
             onDismiss = { showAddExpenseDialog = false },
-            onConfirm = { amount, cat, isHome, note ->
-                onAddExpense(amount, cat, isHome, note)
+            onConfirm = { name, amount, type, note ->
+                viewModel.addExpense(name, amount, type, note)
                 showAddExpenseDialog = false
             }
         )
     }
 
+    // Dialog: Edit Opening Cash
     if (showEditOpeningCashDialog) {
-        EditOpeningCashDialog(
-            currentValue = openingBalance,
+        EditCashAmountDialog(
+            title = "সাবেক ক্যাশ (সকালের শুরু)",
+            currentAmount = uiState.openingCash,
             onDismiss = { showEditOpeningCashDialog = false },
-            onConfirm = { newBal ->
-                onUpdateOpeningBalance(newBal)
+            onConfirm = { newAmount ->
+                viewModel.updateOpeningCash(newAmount)
                 showEditOpeningCashDialog = false
             }
         )
     }
-}
 
-// ==========================================
-// 1. NOTEBOOK DATE HEADER COMPONENT
-// ==========================================
-@Composable
-fun NotebookDateHeader(
-    dateString: String,
-    dayOfWeek: String,
-    onPrevClick: () -> Unit,
-    onNextClick: () -> Unit,
-    onDateClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag("notebook_date_header"),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = NotebookPaper),
-        border = BorderStroke(1.dp, NotebookCardBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            // Spiral Binder Ring Motif Row
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(14.dp)
-                    .background(Color(0xFFF1F5F9))
-                    .drawBehind {
-                        val holeRadius = 3.dp.toPx()
-                        val holeSpacing = 24.dp.toPx()
-                        var currentX = 16.dp.toPx()
-                        while (currentX < size.width - 16.dp.toPx()) {
-                            drawCircle(
-                                color = Color(0xFFCBD5E1),
-                                radius = holeRadius,
-                                center = Offset(currentX, size.height / 2)
-                            )
-                            currentX += holeSpacing
-                        }
-                    }
-            )
-
-            // Date Navigation Row
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(
-                    onClick = onPrevClick,
-                    modifier = Modifier.testTag("btn_prev_day")
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "পূর্ববর্তী দিন",
-                        tint = TextSecondary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-                Surface(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .clickable(onClick = onDateClick)
-                        .testTag("btn_select_date"),
-                    color = BalanceBlueBg,
-                    border = BorderStroke(1.dp, BalanceBlueBorder)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = "তারিখ",
-                            tint = BalanceBlue,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = PdfExporter.toBengaliDigits(dateString),
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = BalanceNavy
-                        )
-                        if (dayOfWeek.isNotBlank()) {
-                            Text(
-                                text = "• $dayOfWeek",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = BalanceBlue
-                            )
-                        }
-                    }
-                }
-
-                IconButton(
-                    onClick = onNextClick,
-                    modifier = Modifier.testTag("btn_next_day")
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = "পরবর্তী দিন",
-                        tint = TextSecondary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+    // Dialog: Edit Actual Available Cash
+    if (showActualCashDialog) {
+        EditCashAmountDialog(
+            title = "হাতে থাকা প্রকৃত ক্যাশ (গোনা টাকা)",
+            currentAmount = uiState.actualAvailableCash,
+            onDismiss = { showActualCashDialog = false },
+            onConfirm = { newAmount ->
+                viewModel.updateAvailableCash(newAmount)
+                showActualCashDialog = false
             }
-        }
-    }
-}
-
-// ==========================================
-// 2. HERO: CURRENT BALANCE NOTEBOOK CARD
-// ==========================================
-@Composable
-fun CurrentBalanceCard(
-    currentBalance: Double,
-    openingBalance: Double,
-    totalIncome: Double,
-    totalExpenses: Double,
-    onEditOpeningCash: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag("card_current_balance"),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = NotebookPaper),
-        border = BorderStroke(1.5.dp, if (currentBalance >= 0) BalanceBlueBorder else ExpenseRedBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            if (currentBalance >= 0) Color(0xFFF8FAFC) else Color(0xFFFFF1F2),
-                            Color.White
-                        )
-                    )
-                )
-                .padding(18.dp)
-        ) {
-            // Card Title & Status Badge
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(CircleShape)
-                            .background(if (currentBalance >= 0) BalanceBlueBg else ExpenseRedBg),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AccountBalanceWallet,
-                            contentDescription = "ক্যাশ ব্যালেন্স",
-                            tint = if (currentBalance >= 0) BalanceBlue else ExpenseRed,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                    Text(
-                        text = "বর্তমান ক্যাশ ব্যালেন্স (হাতে স্থিতি)",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = TextSecondary
-                    )
-                }
-
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = if (currentBalance >= 0) IncomeGreenBg else ExpenseRedBg,
-                    border = BorderStroke(1.dp, if (currentBalance >= 0) IncomeGreenBorder else ExpenseRedBorder)
-                ) {
-                    Text(
-                        text = if (currentBalance >= 0) "উদ্বৃত্ত / প্লাস" else "ঘাটতি",
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = if (currentBalance >= 0) IncomeGreen else ExpenseRed
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Large Hero Balance
-            Text(
-                text = "৳ ${PdfExporter.formatBengaliNumber(currentBalance)}",
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.ExtraBold,
-                color = if (currentBalance >= 0) BalanceNavy else ExpenseRed,
-                modifier = Modifier.testTag("tv_current_balance_amount")
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Notebook Ledger Calculation Formula Row
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                color = Color(0xFFF8FAFC),
-                border = BorderStroke(1.dp, NotebookCardBorder)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Opening / Sabek
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable(onClick = onEditOpeningCash)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "প্রারম্ভিক ক্যাশ",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = TextMuted
-                            )
-                            Spacer(modifier = Modifier.width(2.dp))
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Edit",
-                                tint = TextMuted,
-                                modifier = Modifier.size(11.dp)
-                            )
-                        }
-                        Text(
-                            text = "৳ ${PdfExporter.formatBengaliNumber(openingBalance)}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = TextPrimary
-                        )
-                    }
-
-                    Text(text = "+", fontWeight = FontWeight.Bold, color = TextMuted, fontSize = 16.sp)
-
-                    // Income
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "মোট আয়",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = IncomeGreen
-                        )
-                        Text(
-                            text = "৳ ${PdfExporter.formatBengaliNumber(totalIncome)}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = IncomeGreen
-                        )
-                    }
-
-                    Text(text = "−", fontWeight = FontWeight.Bold, color = TextMuted, fontSize = 16.sp)
-
-                    // Expense
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "মোট ব্যয়",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = ExpenseRed
-                        )
-                        Text(
-                            text = "৳ ${PdfExporter.formatBengaliNumber(totalExpenses)}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = ExpenseRed
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-// ==========================================
-// 3. DAILY INCOME NOTEBOOK CARD
-// ==========================================
-@Composable
-fun DailyIncomeCard(
-    totalIncome: Double,
-    cashSales: Double,
-    bakiCollection: Double,
-    onAddClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.testTag("card_daily_income"),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = NotebookPaper),
-        border = BorderStroke(1.dp, IncomeGreenBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(IncomeGreenBg.copy(alpha = 0.4f))
-                .padding(14.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(IncomeGreenBg),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.TrendingUp,
-                        contentDescription = "Income",
-                        tint = IncomeGreen,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = IncomeGreen,
-                    modifier = Modifier.clickable(onClick = onAddClick)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add",
-                            tint = Color.White,
-                            modifier = Modifier.size(12.dp)
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            text = "আয় যোগ",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.5.sp
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "মোট দৈনিক আয়",
-                style = MaterialTheme.typography.labelMedium,
-                color = TextSecondary,
-                fontWeight = FontWeight.Medium
-            )
-
-            Text(
-                text = "৳ ${PdfExporter.formatBengaliNumber(totalIncome)}",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = IncomeGreen,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Divider(color = IncomeGreenBorder.copy(alpha = 0.6f), thickness = 0.8.dp)
-            Spacer(modifier = Modifier.height(6.dp))
-
-            // Sub Breakdown
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "নগদ বিক্রি:",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontSize = 11.sp,
-                    color = TextSecondary
-                )
-                Text(
-                    text = "৳ ${PdfExporter.formatBengaliNumber(cashSales)}",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary
-                )
-            }
-
-            Spacer(modifier = Modifier.height(2.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "বাকি আদায়:",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontSize = 11.sp,
-                    color = TextSecondary
-                )
-                Text(
-                    text = "৳ ${PdfExporter.formatBengaliNumber(bakiCollection)}",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary
-                )
-            }
-        }
-    }
-}
-
-// ==========================================
-// 4. DAILY EXPENSES NOTEBOOK CARD
-// ==========================================
-@Composable
-fun DailyExpenseCard(
-    totalExpenses: Double,
-    shopExpenses: Double,
-    homeExpenses: Double,
-    onAddClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.testTag("card_daily_expense"),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = NotebookPaper),
-        border = BorderStroke(1.dp, ExpenseRedBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(ExpenseRedBg.copy(alpha = 0.4f))
-                .padding(14.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(ExpenseRedBg),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.TrendingDown,
-                        contentDescription = "Expense",
-                        tint = ExpenseRed,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = ExpenseRed,
-                    modifier = Modifier.clickable(onClick = onAddClick)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add",
-                            tint = Color.White,
-                            modifier = Modifier.size(12.dp)
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            text = "খরচ যোগ",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.5.sp
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "মোট দৈনিক ব্যয়",
-                style = MaterialTheme.typography.labelMedium,
-                color = TextSecondary,
-                fontWeight = FontWeight.Medium
-            )
-
-            Text(
-                text = "৳ ${PdfExporter.formatBengaliNumber(totalExpenses)}",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = ExpenseRed,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Divider(color = ExpenseRedBorder.copy(alpha = 0.6f), thickness = 0.8.dp)
-            Spacer(modifier = Modifier.height(6.dp))
-
-            // Sub Breakdown
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "দোকান খরচ:",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontSize = 11.sp,
-                    color = TextSecondary
-                )
-                Text(
-                    text = "৳ ${PdfExporter.formatBengaliNumber(shopExpenses)}",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary
-                )
-            }
-
-            Spacer(modifier = Modifier.height(2.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "সংসার/অন্যান্য:",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontSize = 11.sp,
-                    color = TextSecondary
-                )
-                Text(
-                    text = "৳ ${PdfExporter.formatBengaliNumber(homeExpenses)}",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary
-                )
-            }
-        }
-    }
-}
-
-// ==========================================
-// 5. NOTEBOOK RULED LEDGER SHEET CARD
-// ==========================================
-@Composable
-fun NotebookRuledLedgerCard(
-    openingBalance: Double,
-    cashSales: Double,
-    bakiCollection: Double,
-    shopExpenses: Double,
-    homeExpenses: Double,
-    totalIncome: Double,
-    totalExpenses: Double,
-    currentBalance: Double,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag("card_notebook_ruled_ledger"),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = NotebookPaper),
-        border = BorderStroke(1.dp, NotebookCardBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .drawBehind {
-                    // Left notebook margin red rule line
-                    val redLineX = 24.dp.toPx()
-                    drawLine(
-                        color = NotebookMarginRed.copy(alpha = 0.45f),
-                        start = Offset(redLineX, 0f),
-                        end = Offset(redLineX, size.height),
-                        strokeWidth = 1.5.dp.toPx()
-                    )
-                }
-                .padding(start = 32.dp, end = 16.dp, top = 16.dp, bottom = 16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.MenuBook,
-                    contentDescription = "Ledger",
-                    tint = BalanceNavy,
-                    modifier = Modifier.size(16.dp)
-                )
-                Text(
-                    text = "আজকের হিসাব খাতার বিবরণী",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = BalanceNavy
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Line 1: Opening
-            LedgerLineItem(
-                label = "১. প্রারম্ভিক ক্যাশ (সাবেক ক্যাশ)",
-                amount = openingBalance,
-                amountColor = TextPrimary
-            )
-
-            // Line 2: Income (+)
-            LedgerLineItem(
-                label = "২. (+) মোট দৈনিক ক্যাশ আয় (বিক্রি + আদায়)",
-                amount = totalIncome,
-                amountColor = IncomeGreen,
-                isPlus = true
-            )
-
-            // Line 3: Expenses (-)
-            LedgerLineItem(
-                label = "৩. (−) মোট দৈনিক ব্যয় ও খরচ",
-                amount = totalExpenses,
-                amountColor = ExpenseRed,
-                isMinus = true
-            )
-
-            Divider(color = NotebookCardBorder, thickness = 1.2.dp, modifier = Modifier.padding(vertical = 8.dp))
-
-            // Line 4: Current Balance (=)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "হাতে থাকার কথা (সমাপনী ব্যালেন্স)",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = BalanceNavy
-                )
-                Text(
-                    text = "৳ ${PdfExporter.formatBengaliNumber(currentBalance)}",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = if (currentBalance >= 0) BalanceBlue else ExpenseRed
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun LedgerLineItem(
-    label: String,
-    amount: Double,
-    amountColor: Color,
-    isPlus: Boolean = false,
-    isMinus: Boolean = false,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondary
-            )
-            Text(
-                text = (if (isPlus) "+ ৳ " else if (isMinus) "− ৳ " else "৳ ") + PdfExporter.formatBengaliNumber(amount),
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = amountColor
-            )
-        }
-        Divider(color = NotebookRuledLine, thickness = 0.8.dp)
-    }
-}
-
-// ==========================================
-// 6. NOTEBOOK TRANSACTION ROW CARD
-// ==========================================
-@Composable
-fun NotebookTransactionRowCard(
-    transaction: TransactionEntry,
-    onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag("tx_item_${transaction.id}"),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = NotebookPaper),
-        border = BorderStroke(1.dp, if (transaction.isIncome) IncomeGreenBorder.copy(alpha = 0.5f) else NotebookCardBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            // Icon Pill
-            Box(
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(if (transaction.isIncome) IncomeGreenBg else ExpenseRedBg),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = if (transaction.isIncome) Icons.Default.ArrowDownward else Icons.Default.Receipt,
-                    contentDescription = transaction.category,
-                    tint = if (transaction.isIncome) IncomeGreen else ExpenseRed,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-
-            // Info Column
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = transaction.title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = Color(0xFFF1F5F9)
-                    ) {
-                        Text(
-                            text = transaction.category,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.dp),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = TextSecondary,
-                            fontSize = 10.sp
-                        )
-                    }
-                    if (transaction.time.isNotBlank()) {
-                        Text(
-                            text = transaction.time,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = TextMuted,
-                            fontSize = 11.sp
-                        )
-                    }
-                }
-            }
-
-            // Amount Column
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    text = (if (transaction.isIncome) "+ ৳ " else "− ৳ ") + PdfExporter.formatBengaliNumber(transaction.amount),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = if (transaction.isIncome) IncomeGreen else ExpenseRed
-                )
-            }
-
-            // Delete button for custom expenses
-            if (!transaction.isIncome) {
-                IconButton(
-                    onClick = onDeleteClick,
-                    modifier = Modifier.size(28.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.DeleteOutline,
-                        contentDescription = "Delete",
-                        tint = Color(0xFFCBD5E1),
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-            }
-        }
-    }
-}
-
-// ==========================================
-// 7. FILTER PILL COMPONENT
-// ==========================================
-@Composable
-fun NotebookFilterPill(
-    label: String,
-    isSelected: Boolean,
-    selectedColor: Color = BalanceBlue,
-    selectedBg: Color = BalanceBlueBg,
-    onClick: () -> Unit
-) {
-    Surface(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(20.dp),
-        color = if (isSelected) selectedBg else Color.Transparent,
-        border = BorderStroke(1.dp, if (isSelected) selectedColor else NotebookCardBorder)
-    ) {
-        Text(
-            text = label,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-            color = if (isSelected) selectedColor else TextSecondary
         )
     }
 }
 
-// ==========================================
-// 8. EMPTY STATE COMPONENT
-// ==========================================
 @Composable
-fun NotebookEmptyStateCard(
-    isSearching: Boolean,
-    selectedTab: Int,
-    onAddIncomeClick: () -> Unit,
-    onAddExpenseClick: () -> Unit,
-    modifier: Modifier = Modifier
+private fun DateSelectorHeader(
+    dateStr: String,
+    dayStr: String,
+    onPrevClick: () -> Unit,
+    onNextClick: () -> Unit,
+    onCalendarClick: () -> Unit,
+    onTodayClick: () -> Unit
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = NotebookPaper),
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, NotebookCardBorder)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(onClick = onPrevClick) {
+                Icon(Icons.Default.ChevronLeft, contentDescription = "পূর্ববর্তী দিন", tint = DokanPurplePrimary)
+            }
+
+            Row(
+                modifier = Modifier.clickable(onClick = onCalendarClick),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Default.CalendarToday, contentDescription = "ক্যালেন্ডার", tint = DokanPurplePrimary, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = dateStr, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 15.sp))
+                    Text(text = dayStr, style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.5.sp))
+                }
+            }
+
+            IconButton(onClick = onNextClick) {
+                Icon(Icons.Default.ChevronRight, contentDescription = "পরবর্তী দিন", tint = DokanPurplePrimary)
+            }
+        }
+    }
+}
+
+@Composable
+private fun HeroBalanceCard(
+    openingCash: Double,
+    expectedCash: Double,
+    actualCash: Double,
+    onEditOpening: () -> Unit,
+    onEditActual: () -> Unit
+) {
+    val discrepancy = actualCash - expectedCash
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = DokanPurpleDark,
+        shadowElevation = 4.dp
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(28.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(18.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(54.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFF1F5F9)),
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.ReceiptLong,
-                    contentDescription = "Empty",
-                    tint = TextMuted,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                text = if (isSearching) "কোনো ফলাফল পাওয়া যায়নি" else "এই তারিখে কোনো লেনদেন পাওয়া যায়নি",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = TextSecondary
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "আজকের বিক্রি বা খরচের হিসাব সহজে লিখে রাখুন",
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextMuted,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(
-                    onClick = onAddIncomeClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = IncomeGreen),
-                    shape = RoundedCornerShape(10.dp),
-                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
-                ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "আয় যোগ করুন", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Column {
+                    Text(
+                        text = "প্রত্যাশিত ক্যাশ স্থিতি",
+                        color = Color(0xFFDDD6FE),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "৳ ${PdfExporter.formatBengaliNumber(expectedCash)}",
+                        color = Color.White,
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 26.sp
+                        )
+                    )
                 }
 
-                OutlinedButton(
-                    onClick = onAddExpenseClick,
+                Surface(
+                    onClick = onEditOpening,
                     shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = ExpenseRed),
-                    border = BorderStroke(1.dp, ExpenseRedBorder),
-                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                    color = Color.White.copy(alpha = 0.15f)
                 ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "খরচ যোগ করুন", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "সাবেক: ৳${PdfExporter.formatBengaliNumber(openingCash)}",
+                            color = Color.White,
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
+
+            Divider(
+                color = Color.White.copy(alpha = 0.15f),
+                modifier = Modifier.padding(vertical = 12.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "গোনা ক্যাশ: ৳${PdfExporter.formatBengaliNumber(actualCash)}",
+                        color = Color(0xFFE9D5FF),
+                        fontSize = 12.sp
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = "সম্পাদনা",
+                        tint = Color(0xFFDDD6FE),
+                        modifier = Modifier
+                            .size(14.dp)
+                            .clickable(onClick = onEditActual)
+                    )
+                }
+
+                if (actualCash > 0) {
+                    val isSurplus = discrepancy >= 0
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (isSurplus) IncomeGreen.copy(alpha = 0.25f) else ExpenseRed.copy(alpha = 0.25f)
+                    ) {
+                        Text(
+                            text = if (isSurplus) "+৳${PdfExporter.formatBengaliNumber(discrepancy)} বাড়তি" else "-৳${PdfExporter.formatBengaliNumber(Math.abs(discrepancy))} কম",
+                            color = if (isSurplus) IncomeGreenLight else ExpenseRedLight,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-// ==========================================
-// 9. DIALOGS
-// ==========================================
+@Composable
+private fun FilterPillTab(
+    title: String,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier.height(34.dp),
+        shape = RoundedCornerShape(8.dp),
+        color = if (isSelected) DokanPurplePrimary else Color.Transparent
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = title,
+                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 12.sp,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+            )
+        }
+    }
+}
 
 @Composable
-fun AddIncomeDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (amount: Double, type: String, note: String) -> Unit
+private fun ExpenseRowItem(
+    expense: ExpenseModel,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    val isPurchase = expense.isPurchase
+    val isHome = expense.isHomeExpense
+
+    val icon = when {
+        isPurchase -> Icons.Default.ShoppingCart
+        isHome -> Icons.Default.Home
+        else -> Icons.Default.ReceiptLong
+    }
+
+    val iconColor = when {
+        isPurchase -> BalanceBlue
+        isHome -> DokanPurplePrimary
+        else -> ExpenseRed
+    }
+
+    val iconBg = when {
+        isPurchase -> BalanceBlueBg
+        isHome -> DokanPurpleBg
+        else -> ExpenseRedBg
+    }
+
+    DokanCard(modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(CircleShape)
+                    .background(iconBg),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(imageVector = icon, contentDescription = null, tint = iconColor, modifier = Modifier.size(18.dp))
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = expense.name,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp
+                    )
+                )
+                Text(
+                    text = "${expense.time} • ${when {
+                        isPurchase -> "পণ্য ক্রয় (স্টক)"
+                        isHome -> "বাড়ির খরচ"
+                        else -> "দোকান খরচ"
+                    }}",
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 11.sp
+                    )
+                )
+            }
+
+            DokanAmountText(
+                amount = expense.amount,
+                type = AmountType.EXPENSE,
+                fontSize = 15.sp
+            )
+
+            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    Icons.Default.DeleteOutline,
+                    contentDescription = "মুছুন",
+                    tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AddExpenseDialog(
+    type: String,
+    onDismiss: () -> Unit,
+    onConfirm: (name: String, amount: Double, type: String, note: String) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
     var amountStr by remember { mutableStateOf("") }
-    var incomeType by remember { mutableStateOf("নগদ বিক্রয়") }
-    var note by remember { mutableStateOf("") }
-    var isError by remember { mutableStateOf(false) }
+    var selectedType by remember { mutableStateOf(type) }
+
+    val title = when (selectedType) {
+        ExpenseModel.TYPE_PURCHASE -> "নতুন মাল কেনা / পণ্য ক্রয়"
+        ExpenseModel.TYPE_HOME -> "নতুন বাড়ির খরচ"
+        else -> "নতুন দোকান খরচ"
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = "দৈনিক আয় / নগদ ক্যাশ যোগ",
-                fontWeight = FontWeight.Bold,
-                color = TextPrimary
-            )
-        },
+        title = { Text(text = title, fontWeight = FontWeight.Bold) },
         text = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                OutlinedTextField(
+            Column {
+                DokanTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = if (selectedType == ExpenseModel.TYPE_PURCHASE) "পণ্যের/কোম্পানির নাম" else "খরচের বিবরণ",
+                    placeholder = if (selectedType == ExpenseModel.TYPE_PURCHASE) "যেমন: ইউনিলিভার মাল কেনা" else "যেমন: দোকান ভাড়া, চা-নাস্তা"
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                DokanAmountInput(
                     value = amountStr,
-                    onValueChange = {
-                        amountStr = it
-                        isError = false
-                    },
-                    label = { Text("টাকার পরিমাণ (৳)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = isError,
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Text(
-                    text = "আয়ের উৎস বেছে নিন:",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = TextSecondary
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    NotebookFilterPill(
-                        label = "নগদ বিক্রয়",
-                        isSelected = incomeType == "নগদ বিক্রয়",
-                        selectedColor = IncomeGreen,
-                        selectedBg = IncomeGreenBg,
-                        onClick = { incomeType = "নগদ বিক্রয়" }
-                    )
-                    NotebookFilterPill(
-                        label = "বাকি আদায়",
-                        isSelected = incomeType == "বাকি আদায়",
-                        selectedColor = IncomeGreen,
-                        selectedBg = IncomeGreenBg,
-                        onClick = { incomeType = "বাকি আদায়" }
-                    )
-                    NotebookFilterPill(
-                        label = "অন্যান্য",
-                        isSelected = incomeType == "অন্যান্য",
-                        selectedColor = IncomeGreen,
-                        selectedBg = IncomeGreenBg,
-                        onClick = { incomeType = "অন্যান্য" }
-                    )
-                }
-
-                OutlinedTextField(
-                    value = note,
-                    onValueChange = { note = it },
-                    label = { Text("বিবরণ / নোট (ঐচ্ছিক)") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    onValueChange = { amountStr = it },
+                    label = "টাকার পরিমাণ (৳)"
                 )
             }
         },
         confirmButton = {
-            Button(
+            TextButton(
                 onClick = {
-                    val amt = amountStr.toDoubleOrNull()
-                    if (amt != null && amt > 0) {
-                        onConfirm(amt, incomeType, note)
-                    } else {
-                        isError = true
+                    val amount = amountStr.toDoubleOrNull() ?: 0.0
+                    if (name.isNotBlank() && amount > 0.0) {
+                        onConfirm(name, amount, selectedType, "")
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = IncomeGreen)
+                enabled = name.isNotBlank() && (amountStr.toDoubleOrNull() ?: 0.0) > 0.0
             ) {
-                Text("সংরক্ষণ করুন")
+                Text("সংরক্ষণ করুন", fontWeight = FontWeight.Bold, color = DokanPurplePrimary)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("বাতিল", color = TextSecondary)
+                Text("বাতিল")
             }
         }
     )
 }
 
 @Composable
-fun AddExpenseDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (amount: Double, category: String, isHome: Boolean, note: String) -> Unit
-) {
-    var amountStr by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("দোকান খরচ") }
-    var isHome by remember { mutableStateOf(false) }
-    var note by remember { mutableStateOf("") }
-    var isError by remember { mutableStateOf(false) }
-
-    val categories = listOf(
-        "দোকান খরচ" to false,
-        "পণ্য ক্রয়" to false,
-        "বিদ্যুৎ ও বিল" to false,
-        "কর্মচারী বেতন" to false,
-        "বাজার ও খাবার" to true,
-        "বাসা ভাড়া" to true,
-        "ব্যক্তিগত হাতখরচ" to true
-    )
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = "নতুন খরচ যোগ করুন",
-                fontWeight = FontWeight.Bold,
-                color = TextPrimary
-            )
-        },
-        text = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                OutlinedTextField(
-                    value = amountStr,
-                    onValueChange = {
-                        amountStr = it
-                        isError = false
-                    },
-                    label = { Text("টাকার পরিমাণ (৳)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = isError,
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Text(
-                    text = "ক্যাটাগরি বেছে নিন:",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = TextSecondary
-                )
-
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        categories.take(4).forEach { (cat, homeFlag) ->
-                            NotebookFilterPill(
-                                label = cat,
-                                isSelected = selectedCategory == cat,
-                                selectedColor = ExpenseRed,
-                                selectedBg = ExpenseRedBg,
-                                onClick = {
-                                    selectedCategory = cat
-                                    isHome = homeFlag
-                                }
-                            )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        categories.drop(4).forEach { (cat, homeFlag) ->
-                            NotebookFilterPill(
-                                label = cat,
-                                isSelected = selectedCategory == cat,
-                                selectedColor = ExpenseRed,
-                                selectedBg = ExpenseRedBg,
-                                onClick = {
-                                    selectedCategory = cat
-                                    isHome = homeFlag
-                                }
-                            )
-                        }
-                    }
-                }
-
-                OutlinedTextField(
-                    value = note,
-                    onValueChange = { note = it },
-                    label = { Text("খরচের নাম বা বিবরণ") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    val amt = amountStr.toDoubleOrNull()
-                    if (amt != null && amt > 0) {
-                        onConfirm(amt, selectedCategory, isHome, note)
-                    } else {
-                        isError = true
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = ExpenseRed)
-            ) {
-                Text("সংরক্ষণ করুন")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("বাতিল", color = TextSecondary)
-            }
-        }
-    )
-}
-
-@Composable
-fun EditOpeningCashDialog(
-    currentValue: Double,
+private fun EditCashAmountDialog(
+    title: String,
+    currentAmount: Double,
     onDismiss: () -> Unit,
     onConfirm: (Double) -> Unit
 ) {
-    var amountStr by remember { mutableStateOf(if (currentValue > 0) currentValue.toInt().toString() else "") }
-    var isError by remember { mutableStateOf(false) }
+    var amountStr by remember { mutableStateOf(if (currentAmount > 0) currentAmount.toString() else "") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = "প্রারম্ভিক ক্যাশ (সাবেক ক্যাশ) সংশোধন",
-                fontWeight = FontWeight.Bold,
-                color = TextPrimary
+        title = { Text(text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp) },
+        text = {
+            DokanAmountInput(
+                value = amountStr,
+                onValueChange = { amountStr = it },
+                label = "টাকার পরিমাণ (৳)"
             )
         },
-        text = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = "আজকের দিন শুরু করার সময় ক্যাশ বাক্সে যে টাকা ছিল তা লিখুন:",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
-                OutlinedTextField(
-                    value = amountStr,
-                    onValueChange = {
-                        amountStr = it
-                        isError = false
-                    },
-                    label = { Text("প্রারম্ভিক ক্যাশ (৳)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = isError,
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        },
         confirmButton = {
-            Button(
+            TextButton(
                 onClick = {
-                    val amt = amountStr.toDoubleOrNull() ?: 0.0
-                    onConfirm(amt)
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = BalanceBlue)
+                    val amount = amountStr.toDoubleOrNull() ?: 0.0
+                    onConfirm(amount)
+                }
             ) {
-                Text("হালনাগাদ করুন")
+                Text("আপডেট করুন", fontWeight = FontWeight.Bold, color = DokanPurplePrimary)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("বাতিল", color = TextSecondary)
+                Text("বাতিল")
             }
         }
     )

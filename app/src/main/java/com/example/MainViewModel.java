@@ -53,6 +53,17 @@ public class MainViewModel extends AndroidViewModel {
         public double creditSales;
         public double bakiCollection;
         public double estimatedProfit;
+
+        public DaySummary() {}
+
+        public DaySummary(String dateKey, double availableCash, double expenses, double sabek, double computedSale, double estimatedProfit) {
+            this.dateKey = dateKey;
+            this.availableCash = availableCash;
+            this.expenses = expenses;
+            this.sabek = sabek;
+            this.computedSale = computedSale;
+            this.estimatedProfit = estimatedProfit;
+        }
     }
 
     public MainViewModel(Application application) {

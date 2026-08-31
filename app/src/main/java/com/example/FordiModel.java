@@ -26,6 +26,7 @@ public class FordiModel implements Serializable {
     private String postedExpenseId;
     private double postedAmount;
     private String postedDate;
+    private String notes = "";
     private long updatedAt;
     private long deletedAt;
 
@@ -206,6 +207,14 @@ public class FordiModel implements Serializable {
 
     public void setPostedDate(String postedDate) {
         this.postedDate = postedDate;
+    }
+
+    public String getNotes() {
+        return this.notes != null ? this.notes : "";
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes != null ? notes : "";
     }
 
     public long getUpdatedAt() {

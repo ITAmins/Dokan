@@ -27,6 +27,7 @@ public class FordiItemModel implements Serializable {
     private double potentialProfit;
     private String status; // NOT_BOUGHT, PARTIALLY_BOUGHT, FULLY_BOUGHT
     private boolean postedToAccounting;
+    private String notes = "";
 
     // Legacy fields for backward compatibility
     private String name;
@@ -285,5 +286,13 @@ public class FordiItemModel implements Serializable {
             this.purchaseRate = price;
             this.actualPurchaseRate = price;
         }
+    }
+
+    public String getNotes() {
+        return this.notes != null ? this.notes : "";
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes != null ? notes : "";
     }
 }

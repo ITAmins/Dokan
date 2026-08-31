@@ -66,6 +66,18 @@ public class ExpenseModel implements Serializable {
         this.updatedAt = System.currentTimeMillis();
     }
 
+    public ExpenseModel(String id, String name, double amount, String date, String time, String type, String expenseType, String note) {
+        this.id = id;
+        this.name = name;
+        this.amount = amount;
+        this.date = date;
+        this.time = time;
+        this.type = (type != null && !type.trim().isEmpty()) ? type : autoClassifyType(name);
+        this.expenseType = (expenseType != null && !expenseType.trim().isEmpty()) ? expenseType : TYPE_SHOP;
+        this.note = note;
+        this.updatedAt = System.currentTimeMillis();
+    }
+
     public static String autoClassifyType(String name) {
         if (name == null || name.trim().isEmpty()) {
             return TYPE_LEGACY_EXPENSE;
@@ -169,6 +181,14 @@ public class ExpenseModel implements Serializable {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getNotes() {
+        return this.note != null ? this.note : "";
+    }
+
+    public void setNotes(String notes) {
+        this.note = notes;
     }
 
     public String getExpenseType() {

@@ -124,6 +124,10 @@ public class SupabaseClientConfig {
         return apiKey;
     }
 
+    public boolean isConfigured() {
+        return (baseUrl != null && !baseUrl.isEmpty()) && (apiKey != null && !apiKey.isEmpty());
+    }
+
     public String getRestEndpoint(String table) {
         return baseUrl + "/rest/v1/" + table;
     }

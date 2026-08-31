@@ -582,6 +582,14 @@ public class PdfExporter {
         return banglaSb.toString();
     }
 
+    public static String formatBengaliNumber(long number) {
+        return formatBengaliNumber((double) number);
+    }
+
+    public static String formatBengaliNumber(int number) {
+        return formatBengaliNumber((double) number);
+    }
+
     public static String formatBengaliNumber(double number) {
         String inputStr;
         if (number == ((long) number)) {
